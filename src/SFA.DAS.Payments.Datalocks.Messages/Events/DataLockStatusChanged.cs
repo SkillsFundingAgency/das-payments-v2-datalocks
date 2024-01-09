@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.Serialization;
-using SFA.DAS.Payments.DataLocks.Model.Entities;
-using SFA.DAS.Payments.Messages.Core.Events;
-using SFA.DAS.Payments.Model.Core;
-using SFA.DAS.Payments.Model.Core.Entities;
+﻿using SFA.DAS.Payments.DataLocks.Model.Entities;
 
 namespace SFA.DAS.Payments.DataLocks.Messages.Events
 {
@@ -17,5 +10,4 @@ namespace SFA.DAS.Payments.DataLocks.Messages.Events
         public LegacyDataLockEventError[] Errors { get; set; }
         public LegacyDataLockEventPeriod[] Periods { get; set; }
     }
-
 }
