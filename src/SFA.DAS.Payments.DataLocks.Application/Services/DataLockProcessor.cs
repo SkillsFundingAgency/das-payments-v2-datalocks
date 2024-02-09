@@ -1,18 +1,18 @@
 ﻿using System;
-using AutoMapper;
-using SFA.DAS.Payments.DataLocks.Application.Interfaces;
-using SFA.DAS.Payments.DataLocks.Messages.Events;
-using SFA.DAS.Payments.EarningEvents.Messages.Events;
-using SFA.DAS.Payments.Model.Core.Entities;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using AutoMapper;
 using SFA.DAS.Payments.Application.Messaging;
+using SFA.DAS.Payments.DataLocks.Application.Interfaces;
 using SFA.DAS.Payments.DataLocks.Domain.Services.CourseValidation;
 using SFA.DAS.Payments.DataLocks.Domain.Services.LearnerMatching;
-using SFA.DAS.Payments.Messages.Core.Events;
+using SFA.DAS.Payments.DataLocks.Messages.Events;
+using SFA.DAS.Payments.EarningEvents.Messages.Events;
+using SFA.DAS.Payments.Messages.Common.Events;
 using SFA.DAS.Payments.Model.Core;
+using SFA.DAS.Payments.Model.Core.Entities;
 using SFA.DAS.Payments.Model.Core.Incentives;
 using SFA.DAS.Payments.Model.Core.OnProgramme;
 
@@ -20,35 +20,45 @@ namespace SFA.DAS.Payments.DataLocks.Application.Services
 {
     public class DataLockProcessor : IDataLockProcessor
     {
-        private readonly IMapper mapper;
-        private readonly ILearnerMatcher learnerMatcher;
-        private readonly IOnProgrammeAndIncentiveEarningPeriodsValidationProcessor onProgrammeAndIncentiveEarningPeriodsValidationProcessor;
-        private readonly IFunctionalSkillEarningPeriodsValidationProcessor functionalSkillEarningPeriodsValidationProcessor;
         private readonly IDuplicateEarningEventService duplicateEarningEventService;
 
+        private readonly IFunctionalSkillEarningPeriodsValidationProcessor
+            functionalSkillEarningPeriodsValidationProcessor;
+
+        private readonly ILearnerMatcher learnerMatcher;
+        private readonly IMapper mapper;
+
+        private readonly IOnProgrammeAndIncentiveEarningPeriodsValidationProcessor
+            onProgrammeAndIncentiveEarningPeriodsValidationProcessor;
+
         public DataLockProcessor(IMapper mapper, ILearnerMatcher learnerMatcher,
-            IOnProgrammeAndIncentiveEarningPeriodsValidationProcessor onProgrammeAndIncentiveEarningPeriodsValidationProcessor,
+            IOnProgrammeAndIncentiveEarningPeriodsValidationProcessor
+                onProgrammeAndIncentiveEarningPeriodsValidationProcessor,
             IFunctionalSkillEarningPeriodsValidationProcessor functionalSkillEarningPeriodsValidationProcessor,
             IDuplicateEarningEventService duplicateEarningEventService)
         {
             this.mapper = mapper;
             this.learnerMatcher = learnerMatcher;
-            this.onProgrammeAndIncentiveEarningPeriodsValidationProcessor = onProgrammeAndIncentiveEarningPeriodsValidationProcessor;
+            this.onProgrammeAndIncentiveEarningPeriodsValidationProcessor =
+                onProgrammeAndIncentiveEarningPeriodsValidationProcessor;
             this.functionalSkillEarningPeriodsValidationProcessor = functionalSkillEarningPeriodsValidationProcessor;
-            this.duplicateEarningEventService = duplicateEarningEventService ?? throw new ArgumentNullException(nameof(duplicateEarningEventService));
+            this.duplicateEarningEventService = duplicateEarningEventService ??
+                                                throw new ArgumentNullException(nameof(duplicateEarningEventService));
         }
 
-        public async Task<List<DataLockEvent>> GetPaymentEvents(ApprenticeshipContractType1EarningEvent earningEvent, CancellationToken cancellationToken)
+        public async Task<List<DataLockEvent>> GetPaymentEvents(ApprenticeshipContractType1EarningEvent earningEvent,
+            CancellationToken cancellationToken)
         {
             var dataLockEvents = new List<DataLockEvent>();
 
             if (await duplicateEarningEventService.IsDuplicate(earningEvent, cancellationToken)
-                .ConfigureAwait(false))
+                    .ConfigureAwait(false))
             {
                 return dataLockEvents;
             }
 
-            var learnerMatchResult = await learnerMatcher.MatchLearner(earningEvent.Ukprn, earningEvent.Learner.Uln).ConfigureAwait(false);
+            var learnerMatchResult = await learnerMatcher.MatchLearner(earningEvent.Ukprn, earningEvent.Learner.Uln)
+                .ConfigureAwait(false);
             if (learnerMatchResult.DataLockErrorCode.HasValue)
             {
                 dataLockEvents = CreateDataLockEvents(earningEvent, learnerMatchResult.DataLockErrorCode.Value);
@@ -83,12 +93,13 @@ namespace SFA.DAS.Payments.DataLocks.Application.Services
         {
             var dataLockEvents = new List<FunctionalSkillDataLockEvent>();
             if (await duplicateEarningEventService.IsDuplicate(earningEvent, cancellationToken)
-                .ConfigureAwait(false))
+                    .ConfigureAwait(false))
             {
                 return dataLockEvents;
             }
 
-            var learnerMatchResult = await learnerMatcher.MatchLearner(earningEvent.Ukprn, earningEvent.Learner.Uln).ConfigureAwait(false);
+            var learnerMatchResult = await learnerMatcher.MatchLearner(earningEvent.Ukprn, earningEvent.Learner.Uln)
+                .ConfigureAwait(false);
             if (learnerMatchResult.DataLockErrorCode.HasValue)
             {
                 dataLockEvents = CreateDataLockEvents(earningEvent, learnerMatchResult.DataLockErrorCode.Value);
@@ -115,7 +126,8 @@ namespace SFA.DAS.Payments.DataLocks.Application.Services
             return dataLockEvents;
         }
 
-        private List<FunctionalSkillDataLockEvent> CreateDataLockEvents(IPaymentsEvent earningEvent, DataLockErrorCode dataLockErrorCode)
+        private List<FunctionalSkillDataLockEvent> CreateDataLockEvents(IPaymentsEvent earningEvent,
+            DataLockErrorCode dataLockErrorCode)
         {
             var dataLockEvents = new List<FunctionalSkillDataLockEvent>();
             var nonPayableEarning = mapper.Map<FunctionalSkillEarningFailedDataLockMatching>(earningEvent);
@@ -142,9 +154,10 @@ namespace SFA.DAS.Payments.DataLocks.Application.Services
             return dataLockEvents;
         }
 
-        private (List<OnProgrammeEarning> validOnProgEarnings, List<OnProgrammeEarning> invalidOnProgEarnings) GetOnProgrammeEarnings(
-            ApprenticeshipContractTypeEarningsEvent earningEvent, 
-            List<ApprenticeshipModel> apprenticeshipsForUln)
+        private (List<OnProgrammeEarning> validOnProgEarnings, List<OnProgrammeEarning> invalidOnProgEarnings)
+            GetOnProgrammeEarnings(
+                ApprenticeshipContractTypeEarningsEvent earningEvent,
+                List<ApprenticeshipModel> apprenticeshipsForUln)
         {
             var validOnProgEarnings = new List<OnProgrammeEarning>();
             var invalidOnProgEarnings = new List<OnProgrammeEarning>();
@@ -154,31 +167,34 @@ namespace SFA.DAS.Payments.DataLocks.Application.Services
                 var validationResult = onProgrammeAndIncentiveEarningPeriodsValidationProcessor
                     .ValidatePeriods(
                         earningEvent.Ukprn,
-                        earningEvent.Learner.Uln, 
+                        earningEvent.Learner.Uln,
                         earningEvent.PriceEpisodes,
                         onProgrammeEarning.Periods.ToList(),
                         (TransactionType)onProgrammeEarning.Type,
-                        apprenticeshipsForUln, 
+                        apprenticeshipsForUln,
                         earningEvent.LearningAim,
                         earningEvent.CollectionYear);
 
                 if (validationResult.ValidPeriods.Any())
                 {
-                    validOnProgEarnings.Add(CreateOnProgrammeEarning(onProgrammeEarning, validationResult.ValidPeriods));
+                    validOnProgEarnings.Add(CreateOnProgrammeEarning(onProgrammeEarning,
+                        validationResult.ValidPeriods));
                 }
 
                 if (validationResult.InValidPeriods.Any())
                 {
-                    invalidOnProgEarnings.Add(CreateOnProgrammeEarning(onProgrammeEarning, validationResult.InValidPeriods));
+                    invalidOnProgEarnings.Add(CreateOnProgrammeEarning(onProgrammeEarning,
+                        validationResult.InValidPeriods));
                 }
             }
 
             return (validOnProgEarnings, invalidOnProgEarnings);
         }
 
-        private (List<FunctionalSkillEarning> validEarnings, List<FunctionalSkillEarning> invalidEarnings) GetFunctionalSkillEarnings(
-            Act1FunctionalSkillEarningsEvent earningEvent,
-            List<ApprenticeshipModel> apprenticeshipsForUln)
+        private (List<FunctionalSkillEarning> validEarnings, List<FunctionalSkillEarning> invalidEarnings)
+            GetFunctionalSkillEarnings(
+                Act1FunctionalSkillEarningsEvent earningEvent,
+                List<ApprenticeshipModel> apprenticeshipsForUln)
         {
             var validEarnings = new List<FunctionalSkillEarning>();
             var invalidEarnings = new List<FunctionalSkillEarning>();
@@ -196,20 +212,23 @@ namespace SFA.DAS.Payments.DataLocks.Application.Services
 
                 if (validationResult.ValidPeriods.Any())
                 {
-                    validEarnings.Add(CreateFunctionalSkillEarning(functionalSkillEarning, validationResult.ValidPeriods));
+                    validEarnings.Add(CreateFunctionalSkillEarning(functionalSkillEarning,
+                        validationResult.ValidPeriods));
                 }
 
                 if (validationResult.InValidPeriods.Any())
                 {
-                    invalidEarnings.Add(CreateFunctionalSkillEarning(functionalSkillEarning, validationResult.InValidPeriods));
+                    invalidEarnings.Add(CreateFunctionalSkillEarning(functionalSkillEarning,
+                        validationResult.InValidPeriods));
                 }
             }
 
             return (validEarnings, invalidEarnings);
         }
 
-        private (List<IncentiveEarning> validIncentiveEarnings, List<IncentiveEarning> invalidIncentiveEarning) GetIncentiveEarnings(
-                ApprenticeshipContractTypeEarningsEvent earningEvent, 
+        private (List<IncentiveEarning> validIncentiveEarnings, List<IncentiveEarning> invalidIncentiveEarning)
+            GetIncentiveEarnings(
+                ApprenticeshipContractTypeEarningsEvent earningEvent,
                 List<ApprenticeshipModel> apprenticeshipsForUln)
         {
             var validIncentiveEarnings = new List<IncentiveEarning>();
@@ -235,14 +254,16 @@ namespace SFA.DAS.Payments.DataLocks.Application.Services
 
                 if (validationResult.InValidPeriods.Any())
                 {
-                    invalidIncentiveEarning.Add(CreateIncentiveEarning(incentiveEarning, validationResult.InValidPeriods));
+                    invalidIncentiveEarning.Add(CreateIncentiveEarning(incentiveEarning,
+                        validationResult.InValidPeriods));
                 }
             }
 
             return (validIncentiveEarnings, invalidIncentiveEarning);
         }
 
-        private List<DataLockEvent> CreateDataLockEvents(ApprenticeshipContractType1EarningEvent earningEvent, DataLockErrorCode dataLockErrorCode)
+        private List<DataLockEvent> CreateDataLockEvents(ApprenticeshipContractType1EarningEvent earningEvent,
+            DataLockErrorCode dataLockErrorCode)
         {
             var dataLockEvents = new List<DataLockEvent>();
             var nonPayableEarning = mapper.Map<EarningFailedDataLockMatching>(earningEvent);
@@ -252,12 +273,12 @@ namespace SFA.DAS.Payments.DataLocks.Application.Services
                 foreach (var period in onProgrammeEarning.Periods)
                 {
                     period.DataLockFailures = new List<DataLockFailure>
+                    {
+                        new DataLockFailure
                         {
-                            new DataLockFailure
-                            {
-                                DataLockError = dataLockErrorCode
-                            }
-                        };
+                            DataLockError = dataLockErrorCode
+                        }
+                    };
                 }
             }
 
@@ -283,7 +304,8 @@ namespace SFA.DAS.Payments.DataLocks.Application.Services
             return dataLockEvents;
         }
 
-        private static OnProgrammeEarning CreateOnProgrammeEarning(OnProgrammeEarning onProgrammeEarning, List<EarningPeriod> periods)
+        private static OnProgrammeEarning CreateOnProgrammeEarning(OnProgrammeEarning onProgrammeEarning,
+            List<EarningPeriod> periods)
         {
             return new OnProgrammeEarning
             {
@@ -293,7 +315,8 @@ namespace SFA.DAS.Payments.DataLocks.Application.Services
             };
         }
 
-        private static IncentiveEarning CreateIncentiveEarning(IncentiveEarning incentiveEarning, List<EarningPeriod> periods)
+        private static IncentiveEarning CreateIncentiveEarning(IncentiveEarning incentiveEarning,
+            List<EarningPeriod> periods)
         {
             return new IncentiveEarning
             {
@@ -303,7 +326,8 @@ namespace SFA.DAS.Payments.DataLocks.Application.Services
             };
         }
 
-        private static FunctionalSkillEarning CreateFunctionalSkillEarning(FunctionalSkillEarning functionalSkillEarning, List<EarningPeriod> periods)
+        private static FunctionalSkillEarning CreateFunctionalSkillEarning(
+            FunctionalSkillEarning functionalSkillEarning, List<EarningPeriod> periods)
         {
             return new FunctionalSkillEarning
             {

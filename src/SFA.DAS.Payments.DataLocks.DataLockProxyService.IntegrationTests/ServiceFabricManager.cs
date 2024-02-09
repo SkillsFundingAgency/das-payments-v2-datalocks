@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SFA.DAS.Payments.DataLocks.DataLockProxyService.IntegrationTests
 {
-    class ServiceFabricManager
+    internal class ServiceFabricManager
     {
         public static async Task<bool> IsApprovalsServiceRunning()
         {

@@ -33,6 +33,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SFA.DAS.Payments.DataLocks.
 EndProject
 Project("{A07B5EB6-E848-4116-A8D0-A826331D98C6}") = "SFA.DAS.Payments.Datalocks.ServiceFabric", "SFA.DAS.Payments.Datalocks.ServiceFabric\SFA.DAS.Payments.Datalocks.ServiceFabric.sfproj", "{9D58FB1A-34EB-4485-98CD-00F638ABFDA4}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{1493C415-DF1C-4462-8685-30118F6F6AB1}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UnitTests", "UnitTests", "{A371C853-4A1C-4163-9622-9E49722DA218}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "IntegrationTests", "IntegrationTests", "{FD495AB5-01F3-4830-ACFB-781203B19144}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -168,6 +174,13 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{EC58CE65-1FAC-43CC-8263-78A89B403BA7} = {A371C853-4A1C-4163-9622-9E49722DA218}
+		{11392121-C182-43DC-B59C-5E599147F531} = {FD495AB5-01F3-4830-ACFB-781203B19144}
+		{9923C39B-655A-4AE3-A73C-AAA4CDF28226} = {A371C853-4A1C-4163-9622-9E49722DA218}
+		{A371C853-4A1C-4163-9622-9E49722DA218} = {1493C415-DF1C-4462-8685-30118F6F6AB1}
+		{FD495AB5-01F3-4830-ACFB-781203B19144} = {1493C415-DF1C-4462-8685-30118F6F6AB1}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {01694CD1-77FD-4021-90D3-873561B417D3}

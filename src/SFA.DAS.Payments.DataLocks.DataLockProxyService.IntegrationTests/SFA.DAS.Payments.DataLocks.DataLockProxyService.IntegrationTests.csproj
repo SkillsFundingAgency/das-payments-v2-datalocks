@@ -11,6 +11,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Properties\**" />
+    <EmbeddedResource Remove="Properties\**" />
+    <None Remove="Properties\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="appsettings.development.json" />
     <None Remove="appsettings.json" />
   </ItemGroup>
@@ -32,18 +38,12 @@
     <PackageReference Include="NUnit3TestAdapter" Version="3.15.1" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SFA.DAS.Payments.DataLocks.DataLockProxyService\SFA.DAS.Payments.DataLocks.DataLockProxyService.csproj">
-      <Project>{1cf679b6-fc12-4628-8ae4-c093a4270e25}</Project>
-      <Name>SFA.DAS.Payments.DataLocks.DataLockProxyService</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Properties\" />
-  </ItemGroup>
-  <ItemGroup>
     
     <EmbeddedResource Include="appsettings.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SFA.DAS.Payments.DataLocks.DataLockProxyService\SFA.DAS.Payments.DataLocks.DataLockProxyService.csproj" />
   </ItemGroup>
 </Project>
