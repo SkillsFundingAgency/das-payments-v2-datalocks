@@ -10,7 +10,7 @@ jobs:
     value: SFA.DAS.Payments.DataLocks
 
   - name: BuildProjects
-  - value: |
+    value: |
       src/SFA.DAS.Payments.DataLocks.Application/SFA.DAS.Payments.DataLocks.Application.csproj;
       src/SFA.DAS.Payments.DataLocks.ApprovalsService/SFA.DAS.Payments.DataLocks.ApprovalsService.csproj;
       src/SFA.DAS.Payments.DataLocks.DataLockEventService/SFA.DAS.Payments.DataLocks.DataLockEventService.csproj;
@@ -25,7 +25,7 @@ jobs:
       src/SFA.DAS.Payments.DataLocks.ServiceFabric/SFA.DAS.Payments.DataLocks.ServiceFabric.sfproj;
 
   - name: NugetProjects
-  - value: |
+    value: |
       src/SFA.DAS.Payments.DataLocks.Messages/SFA.DAS.Payments.DataLocks.Messages.csproj;
       src/SFA.DAS.Payments.DataLocks.Model/SFA.DAS.Payments.DataLocks.Model.csproj;
       src/SFA.DAS.Payments.DataLocks.DataLockProxyService/SFA.DAS.Payments.DataLocks.DataLockProxyService.csproj;
