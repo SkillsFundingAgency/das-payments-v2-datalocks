@@ -5,9 +5,7 @@ parameters:
 jobs:
 - job: CodeBuild
   pool:
-    name: DAS - Continuous Integration Agents
-    workspace:
-      clean: all
+    name: SLD Build pool
   variables:
   - group: BUILD Management Resources
   - name: SolutionBaseName
@@ -16,90 +14,341 @@ jobs:
   - template: /azure-pipelines-templates/build/step/gitversion.yml
 
 
-  # task: DotNetCoreCLI@2 - Build Projects
+  # task: DotNetCoreCLI@2 - src/SFA.DAS.Payments.DataLocks.Application/SFA.DAS.Payments.DataLocks.Application.csproj
   - task: DotNetCoreCLI@2
-    displayName: Restore - Build Projects
+    displayName: Restore - src/SFA.DAS.Payments.DataLocks.Application/SFA.DAS.Payments.DataLocks.Application.csproj
     inputs:
       command: restore
-      projects: |
-        src/SFA.DAS.Payments.DataLocks.Application/SFA.DAS.Payments.DataLocks.Application.csproj;
-        src/SFA.DAS.Payments.DataLocks.ApprovalsService/SFA.DAS.Payments.DataLocks.ApprovalsService.csproj;
-        src/SFA.DAS.Payments.DataLocks.DataLockEventService/SFA.DAS.Payments.DataLocks.DataLockEventService.csproj;
-        src/SFA.DAS.Payments.DataLocks.DataLockProxyService/SFA.DAS.Payments.DataLocks.DataLockProxyService.csproj;
-        src/SFA.DAS.Payments.DataLocks.DataLockService/SFA.DAS.Payments.DataLocks.DataLockService.csproj;
-        src/SFA.DAS.Payments.DataLocks.DataLockService.Interfaces/SFA.DAS.Payments.DataLocks.DataLockService.Interfaces.csproj;
-        src/SFA.DAS.Payments.DataLocks.DataLockStatusChangedService/SFA.DAS.Payments.DataLocks.DataLockStatusChangedService.csproj;
-        src/SFA.DAS.Payments.DataLocks.Domain/SFA.DAS.Payments.DataLocks.Domain.csproj;
-        src/SFA.DAS.Payments.DataLocks.Messages/SFA.DAS.Payments.DataLocks.Messages.csproj;
-        src/SFA.DAS.Payments.DataLocks.Messages.Internal/SFA.DAS.Payments.DataLocks.Messages.Internal.csproj;
-        src/SFA.DAS.Payments.DataLocks.Model/SFA.DAS.Payments.DataLocks.Model.csproj;
-        src/SFA.DAS.Payments.DataLocks.ServiceFabric/SFA.DAS.Payments.DataLocks.ServiceFabric.sfproj;
-
+      projects: src/SFA.DAS.Payments.DataLocks.Application/SFA.DAS.Payments.DataLocks.Application.csproj
       noCache: true
       feedsToUse: 'select'
       vstsFeed: 'dct-pkg'
 
-  # task: NuGetCommand@2 - Nuget projects
-  - task: NuGetCommand@2
-    displayName: Restore - Nuget projects
+  # task: DotNetCoreCLI@2 - src/SFA.DAS.Payments.DataLocks.ApprovalsService/SFA.DAS.Payments.DataLocks.ApprovalsService.csproj
+  - task: DotNetCoreCLI@2
+    displayName: Restore - src/SFA.DAS.Payments.DataLocks.ApprovalsService/SFA.DAS.Payments.DataLocks.ApprovalsService.csproj
     inputs:
       command: restore
-      projects: |
-        src/SFA.DAS.Payments.DataLocks.Messages/SFA.DAS.Payments.DataLocks.Messages.csproj;
-        src/SFA.DAS.Payments.DataLocks.Model/SFA.DAS.Payments.DataLocks.Model.csproj;
-        src/SFA.DAS.Payments.DataLocks.DataLockProxyService/SFA.DAS.Payments.DataLocks.DataLockProxyService.csproj;
-        src/SFA.DAS.Payments.DataLocks.Application/SFA.DAS.Payments.DataLocks.Application.csproj;
-        src/SFA.DAS.Payments.DataLocks.Messages.Internal/SFA.DAS.Payments.DataLocks.Messages.Internal.csproj;
-        src/SFA.DAS.Payments.DataLocks.DataLockService.Interfaces/SFA.DAS.Payments.DataLocks.DataLockService.Interfaces.csproj;
-        src/src/SFA.DAS.Payments.DataLocks.Domain/SFA.DAS.Payments.DataLocks.Domain.csproj;
+      projects: src/SFA.DAS.Payments.DataLocks.ApprovalsService/SFA.DAS.Payments.DataLocks.ApprovalsService.csproj
+      noCache: true
+      feedsToUse: 'select'
+      vstsFeed: 'dct-pkg'
+
+  # task: DotNetCoreCLI@2 - src/SFA.DAS.Payments.DataLocks.DataLockEventService/SFA.DAS.Payments.DataLocks.DataLockEventService.csproj
+  - task: DotNetCoreCLI@2
+    displayName: Restore - src/SFA.DAS.Payments.DataLocks.DataLockEventService/SFA.DAS.Payments.DataLocks.DataLockEventService.csproj
+    inputs:
+      command: restore
+      projects: src/SFA.DAS.Payments.DataLocks.DataLockEventService/SFA.DAS.Payments.DataLocks.DataLockEventService.csproj
+      noCache: true
+      feedsToUse: 'select'
+      vstsFeed: 'dct-pkg'
+
+  # task: DotNetCoreCLI@2 - src/SFA.DAS.Payments.DataLocks.DataLockProxyService/SFA.DAS.Payments.DataLocks.DataLockProxyService.csproj
+  - task: DotNetCoreCLI@2
+    displayName: Restore - src/SFA.DAS.Payments.DataLocks.DataLockProxyService/SFA.DAS.Payments.DataLocks.DataLockProxyService.csproj
+    inputs:
+      command: restore
+      projects: src/SFA.DAS.Payments.DataLocks.DataLockProxyService/SFA.DAS.Payments.DataLocks.DataLockProxyService.csproj
+      noCache: true
+      feedsToUse: 'select'
+      vstsFeed: 'dct-pkg'
+
+  # task: DotNetCoreCLI@2 - src/SFA.DAS.Payments.DataLocks.DataLockService/SFA.DAS.Payments.DataLocks.DataLockService.csproj
+  - task: DotNetCoreCLI@2
+    displayName: Restore - src/SFA.DAS.Payments.DataLocks.DataLockService/SFA.DAS.Payments.DataLocks.DataLockService.csproj
+    inputs:
+      command: restore
+      projects: src/SFA.DAS.Payments.DataLocks.DataLockService/SFA.DAS.Payments.DataLocks.DataLockService.csproj
+      noCache: true
+      feedsToUse: 'select'
+      vstsFeed: 'dct-pkg'
+
+  # task: DotNetCoreCLI@2 - src/SFA.DAS.Payments.DataLocks.DataLockService.Interfaces/SFA.DAS.Payments.DataLocks.DataLockService.Interfaces.csproj
+  - task: DotNetCoreCLI@2
+    displayName: Restore - src/SFA.DAS.Payments.DataLocks.DataLockService.Interfaces/SFA.DAS.Payments.DataLocks.DataLockService.Interfaces.csproj
+    inputs:
+      command: restore
+      projects: src/SFA.DAS.Payments.DataLocks.DataLockService.Interfaces/SFA.DAS.Payments.DataLocks.DataLockService.Interfaces.csproj
+      noCache: true
+      feedsToUse: 'select'
+      vstsFeed: 'dct-pkg'
+
+  # task: DotNetCoreCLI@2 - src/SFA.DAS.Payments.DataLocks.DataLockStatusChangedService/SFA.DAS.Payments.DataLocks.DataLockStatusChangedService.csproj
+  - task: DotNetCoreCLI@2
+    displayName: Restore - src/SFA.DAS.Payments.DataLocks.DataLockStatusChangedService/SFA.DAS.Payments.DataLocks.DataLockStatusChangedService.csproj
+    inputs:
+      command: restore
+      projects: src/SFA.DAS.Payments.DataLocks.DataLockStatusChangedService/SFA.DAS.Payments.DataLocks.DataLockStatusChangedService.csproj
+      noCache: true
+      feedsToUse: 'select'
+      vstsFeed: 'dct-pkg'
+
+  # task: DotNetCoreCLI@2 - src/SFA.DAS.Payments.DataLocks.Domain/SFA.DAS.Payments.DataLocks.Domain.csproj
+  - task: DotNetCoreCLI@2
+    displayName: Restore - src/SFA.DAS.Payments.DataLocks.Domain/SFA.DAS.Payments.DataLocks.Domain.csproj
+    inputs:
+      command: restore
+      projects: src/SFA.DAS.Payments.DataLocks.Domain/SFA.DAS.Payments.DataLocks.Domain.csproj
+      noCache: true
+      feedsToUse: 'select'
+      vstsFeed: 'dct-pkg'
+
+  # task: DotNetCoreCLI@2 - src/SFA.DAS.Payments.DataLocks.Messages/SFA.DAS.Payments.DataLocks.Messages.csproj
+  - task: DotNetCoreCLI@2
+    displayName: Restore - src/SFA.DAS.Payments.DataLocks.Messages/SFA.DAS.Payments.DataLocks.Messages.csproj
+    inputs:
+      command: restore
+      projects: src/SFA.DAS.Payments.DataLocks.Messages/SFA.DAS.Payments.DataLocks.Messages.csproj
+      noCache: true
+      feedsToUse: 'select'
+      vstsFeed: 'dct-pkg'
+
+  # task: DotNetCoreCLI@2 - src/SFA.DAS.Payments.DataLocks.Messages.Internal/SFA.DAS.Payments.DataLocks.Messages.Internal.csproj
+  - task: DotNetCoreCLI@2
+    displayName: Restore - src/SFA.DAS.Payments.DataLocks.Messages.Internal/SFA.DAS.Payments.DataLocks.Messages.Internal.csproj
+    inputs:
+      command: restore
+      projects: src/SFA.DAS.Payments.DataLocks.Messages.Internal/SFA.DAS.Payments.DataLocks.Messages.Internal.csproj
+      noCache: true
+      feedsToUse: 'select'
+      vstsFeed: 'dct-pkg'
+
+  # task: DotNetCoreCLI@2 - src/SFA.DAS.Payments.DataLocks.Model/SFA.DAS.Payments.DataLocks.Model.csproj
+  - task: DotNetCoreCLI@2
+    displayName: Restore - src/SFA.DAS.Payments.DataLocks.Model/SFA.DAS.Payments.DataLocks.Model.csproj
+    inputs:
+      command: restore
+      projects: src/SFA.DAS.Payments.DataLocks.Model/SFA.DAS.Payments.DataLocks.Model.csproj
+      noCache: true
+      feedsToUse: 'select'
+      vstsFeed: 'dct-pkg'
+
+  # task: DotNetCoreCLI@2 - src/SFA.DAS.Payments.DataLocks.ServiceFabric/SFA.DAS.Payments.DataLocks.ServiceFabric.sfproj
+  #- task: DotNetCoreCLI@2
+  # displayName: Restore - src/SFA.DAS.Payments.DataLocks.ServiceFabric/SFA.DAS.Payments.DataLocks.ServiceFabric.sfproj
+  #  inputs:
+  #    command: restore
+  #    projects: src/SFA.DAS.Payments.DataLocks.ServiceFabric/SFA.DAS.Payments.DataLocks.ServiceFabric.sfproj
+  #    noCache: true
+  #    feedsToUse: 'select'
+  #    vstsFeed: 'dct-pkg'
+
+
+
+
+  # task: NuGetCommand@2 - src/SFA.DAS.Payments.DataLocks.Messages/SFA.DAS.Payments.DataLocks.Messages.csproj
+  - task: NuGetCommand@2
+    displayName: Restore - src/SFA.DAS.Payments.DataLocks.Messages/SFA.DAS.Payments.DataLocks.Messages.csproj
+    inputs:
+      command: restore
+      projects: src/SFA.DAS.Payments.DataLocks.Messages/SFA.DAS.Payments.DataLocks.Messages.csproj
+      noCache: true
+      feedsToUse: 'select'
+      vstsFeed: 'dct-pkg'
+
+  # task: NuGetCommand@2 - src/SFA.DAS.Payments.DataLocks.Model/SFA.DAS.Payments.DataLocks.Model.csproj
+  - task: NuGetCommand@2
+    displayName: Restore - src/SFA.DAS.Payments.DataLocks.Model/SFA.DAS.Payments.DataLocks.Model.csproj
+    inputs:
+      command: restore
+      projects: src/SFA.DAS.Payments.DataLocks.Model/SFA.DAS.Payments.DataLocks.Model.csproj
+      noCache: true
+      feedsToUse: 'select'
+      vstsFeed: 'dct-pkg'
+
+  # TODO: Uncomment when PeriodEnd packages are in Nuget
+  # task: NuGetCommand@2 - src/SFA.DAS.Payments.DataLocks.DataLockProxyService/SFA.DAS.Payments.DataLocks.DataLockProxyService.csproj
+  #- task: NuGetCommand@2
+  #  displayName: Restore - src/SFA.DAS.Payments.DataLocks.DataLockProxyService/SFA.DAS.Payments.DataLocks.DataLockProxyService.csproj
+  #  inputs:
+  #    command: restore
+  #    projects: src/SFA.DAS.Payments.DataLocks.DataLockProxyService/SFA.DAS.Payments.DataLocks.DataLockProxyService.csproj
+  #    noCache: true
+  #    feedsToUse: 'select'
+  #    vstsFeed: 'dct-pkg'
+
+  # task: NuGetCommand@2 - src/SFA.DAS.Payments.DataLocks.Application/SFA.DAS.Payments.DataLocks.Application.csproj
+  - task: NuGetCommand@2
+    displayName: Restore - src/SFA.DAS.Payments.DataLocks.Application/SFA.DAS.Payments.DataLocks.Application.csproj
+    inputs:
+      command: restore
+      projects: src/SFA.DAS.Payments.DataLocks.Application/SFA.DAS.Payments.DataLocks.Application.csproj
+      noCache: true
+      feedsToUse: 'select'
+      vstsFeed: 'dct-pkg'
+
+  # task: NuGetCommand@2 - src/SFA.DAS.Payments.DataLocks.Messages.Internal/SFA.DAS.Payments.DataLocks.Messages.Internal.csproj
+  - task: NuGetCommand@2
+    displayName: Restore - src/SFA.DAS.Payments.DataLocks.Messages.Internal/SFA.DAS.Payments.DataLocks.Messages.Internal.csproj
+    inputs:
+      command: restore
+      projects: src/SFA.DAS.Payments.DataLocks.Messages.Internal/SFA.DAS.Payments.DataLocks.Messages.Internal.csproj
+      noCache: true
+      feedsToUse: 'select'
+      vstsFeed: 'dct-pkg'
+
+  # task: NuGetCommand@2 - src/SFA.DAS.Payments.DataLocks.DataLockService.Interfaces/SFA.DAS.Payments.DataLocks.DataLockService.Interfaces.csproj
+  - task: NuGetCommand@2
+    displayName: Restore - src/SFA.DAS.Payments.DataLocks.DataLockService.Interfaces/SFA.DAS.Payments.DataLocks.DataLockService.Interfaces.csproj
+    inputs:
+      command: restore
+      projects: src/SFA.DAS.Payments.DataLocks.DataLockService.Interfaces/SFA.DAS.Payments.DataLocks.DataLockService.Interfaces.csproj
+      noCache: true
+      feedsToUse: 'select'
+      vstsFeed: 'dct-pkg'
+
+  # task: NuGetCommand@2 - src/SFA.DAS.Payments.DataLocks.Domain/SFA.DAS.Payments.DataLocks.Domain.csproj
+  - task: NuGetCommand@2
+    displayName: Restore - src/SFA.DAS.Payments.DataLocks.Domain/SFA.DAS.Payments.DataLocks.Domain.csproj
+    inputs:
+      command: restore
+      projects: src/SFA.DAS.Payments.DataLocks.Domain/SFA.DAS.Payments.DataLocks.Domain.csproj
       noCache: true
       feedsToUse: 'select'
       vstsFeed: 'dct-pkg'
 
   
+
   - task: DotNetCoreCLI@2
-    displayName: Build
+    displayName: Build - SFA.DAS.Payments.DataLocks.Application.csproj
     inputs:
-      projects: |
-        src/SFA.DAS.Payments.DataLocks.Application/SFA.DAS.Payments.DataLocks.Application.csproj;
-        src/SFA.DAS.Payments.DataLocks.ApprovalsService/SFA.DAS.Payments.DataLocks.ApprovalsService.csproj;
-        src/SFA.DAS.Payments.DataLocks.DataLockEventService/SFA.DAS.Payments.DataLocks.DataLockEventService.csproj;
-        src/SFA.DAS.Payments.DataLocks.DataLockProxyService/SFA.DAS.Payments.DataLocks.DataLockProxyService.csproj;
-        src/SFA.DAS.Payments.DataLocks.DataLockService/SFA.DAS.Payments.DataLocks.DataLockService.csproj;
-        src/SFA.DAS.Payments.DataLocks.DataLockService.Interfaces/SFA.DAS.Payments.DataLocks.DataLockService.Interfaces.csproj;
-        src/SFA.DAS.Payments.DataLocks.DataLockStatusChangedService/SFA.DAS.Payments.DataLocks.DataLockStatusChangedService.csproj;
-        src/SFA.DAS.Payments.DataLocks.Domain/SFA.DAS.Payments.DataLocks.Domain.csproj;
-        src/SFA.DAS.Payments.DataLocks.Messages/SFA.DAS.Payments.DataLocks.Messages.csproj;
-        src/SFA.DAS.Payments.DataLocks.Messages.Internal/SFA.DAS.Payments.DataLocks.Messages.Internal.csproj;
-        src/SFA.DAS.Payments.DataLocks.Model/SFA.DAS.Payments.DataLocks.Model.csproj;
-        src/SFA.DAS.Payments.DataLocks.ServiceFabric/SFA.DAS.Payments.DataLocks.ServiceFabric.sfproj;
+      projects:  src/SFA.DAS.Payments.DataLocks.Application/SFA.DAS.Payments.DataLocks.Application.csproj
+      arguments: '--configuration $(buildConfiguration) --no-restore'
+
+  - task: DotNetCoreCLI@2
+    displayName: Build - FA.DAS.Payments.DataLocks.ApprovalsService.csproj
+    inputs:
+      projects:  src/SFA.DAS.Payments.DataLocks.ApprovalsService/SFA.DAS.Payments.DataLocks.ApprovalsService.csproj
+      arguments: '--configuration $(buildConfiguration) --no-restore'
+
+  - task: DotNetCoreCLI@2
+    displayName: Build - SFA.DAS.Payments.DataLocks.DataLockEventService.csproj
+    inputs:
+      projects:  src/SFA.DAS.Payments.DataLocks.DataLockEventService/SFA.DAS.Payments.DataLocks.DataLockEventService.csproj
+      arguments: '--configuration $(buildConfiguration) --no-restore'
+
+  #- task: DotNetCoreCLI@2
+  #  displayName: Build - SFA.DAS.Payments.DataLocks.DataLockProxyService.csproj
+  #  inputs:
+  #    projects:  src/SFA.DAS.Payments.DataLocks.DataLockProxyService/SFA.DAS.Payments.DataLocks.DataLockProxyService.csproj
+  #    arguments: '--configuration $(buildConfiguration) --no-restore'
+
+  - task: DotNetCoreCLI@2
+    displayName: Build - SFA.DAS.Payments.DataLocks.DataLockService.csproj
+    inputs:
+      projects:  src/SFA.DAS.Payments.DataLocks.DataLockService/SFA.DAS.Payments.DataLocks.DataLockService.csproj
+      arguments: '--configuration $(buildConfiguration) --no-restore'
+
+  - task: DotNetCoreCLI@2
+    displayName: Build - SFA.DAS.Payments.DataLocks.DataLockService.Interfaces.csproj
+    inputs:
+      projects:  src/SFA.DAS.Payments.DataLocks.DataLockService.Interfaces/SFA.DAS.Payments.DataLocks.DataLockService.Interfaces.csproj
+      arguments: '--configuration $(buildConfiguration) --no-restore'
+
+  - task: DotNetCoreCLI@2
+    displayName: Build - SFA.DAS.Payments.DataLocks.DataLockStatusChangedService.csproj
+    inputs:
+      projects:  src/SFA.DAS.Payments.DataLocks.DataLockStatusChangedService/SFA.DAS.Payments.DataLocks.DataLockStatusChangedService.csproj
+      arguments: '--configuration $(buildConfiguration) --no-restore'
+
+  - task: DotNetCoreCLI@2
+    displayName: Build - SFA.DAS.Payments.DataLocks.Domain.csproj
+    inputs:
+      projects:  src/SFA.DAS.Payments.DataLocks.Domain/SFA.DAS.Payments.DataLocks.Domain.csproj
       arguments: '--configuration $(buildConfiguration) --no-restore'
 
 
-
-  - template: azure-pipelines-templates/build/step/app-build.yml@das-platform-building-blocks
+  - task: DotNetCoreCLI@2
+    displayName: Build - SFA.DAS.Payments.DataLocks.Messages.csproj
+    inputs:
+      projects:  src/SFA.DAS.Payments.DataLocks.Messages/SFA.DAS.Payments.DataLocks.Messages.csproj
+      arguments: '--configuration $(buildConfiguration) --no-restore'
 
   - task: DotNetCoreCLI@2
-    displayName: Publish - dotnet publish ${{ parameters.SolutionBaseName }}
+    displayName: Build - SFA.DAS.Payments.DataLocks.Messages.Internal.csproj
+    inputs:
+      projects:  src/SFA.DAS.Payments.DataLocks.Messages.Internal/SFA.DAS.Payments.DataLocks.Messages.Internal.csproj
+      arguments: '--configuration $(buildConfiguration) --no-restore'
+
+  - task: DotNetCoreCLI@2
+    displayName: Build - SFA.DAS.Payments.DataLocks.Model.csproj
+    inputs:
+      projects:  src/SFA.DAS.Payments.DataLocks.Model/SFA.DAS.Payments.DataLocks.Model.csproj
+      arguments: '--configuration $(buildConfiguration) --no-restore'
+
+  #- task: DotNetCoreCLI@2
+  #  displayName: Build
+  #  inputs:
+  #    projects:  src/SFA.DAS.Payments.DataLocks.ServiceFabric/SFA.DAS.Payments.DataLocks.ServiceFabric.sfproj
+  #    arguments: '--configuration $(buildConfiguration) --no-restore'
+
+
+
+  - task: DotNetCoreCLI@2
+    displayName: "Publish $(SolutionBaseName)"
     inputs:
       command: publish
-      publishWebProjects: false #set to false as this setting (which defaults to true) will parse the entire repo for web projects
-      projects: |
-        src/SFA.DAS.Payments.DataLocks.Application/SFA.DAS.Payments.DataLocks.Application.csproj;
-        src/SFA.DAS.Payments.DataLocks.ApprovalsService/SFA.DAS.Payments.DataLocks.ApprovalsService.csproj;
-        src/SFA.DAS.Payments.DataLocks.DataLockEventService/SFA.DAS.Payments.DataLocks.DataLockEventService.csproj;
-        src/SFA.DAS.Payments.DataLocks.DataLockProxyService/SFA.DAS.Payments.DataLocks.DataLockProxyService.csproj;
-        src/SFA.DAS.Payments.DataLocks.DataLockService/SFA.DAS.Payments.DataLocks.DataLockService.csproj;
-        src/SFA.DAS.Payments.DataLocks.DataLockService.Interfaces/SFA.DAS.Payments.DataLocks.DataLockService.Interfaces.csproj;
-        src/SFA.DAS.Payments.DataLocks.DataLockStatusChangedService/SFA.DAS.Payments.DataLocks.DataLockStatusChangedService.csproj;
-        src/SFA.DAS.Payments.DataLocks.Domain/SFA.DAS.Payments.DataLocks.Domain.csproj;
-        src/SFA.DAS.Payments.DataLocks.Messages/SFA.DAS.Payments.DataLocks.Messages.csproj;
-        src/SFA.DAS.Payments.DataLocks.Messages.Internal/SFA.DAS.Payments.DataLocks.Messages.Internal.csproj;
-        src/SFA.DAS.Payments.DataLocks.Model/SFA.DAS.Payments.DataLocks.Model.csproj;
-        src/SFA.DAS.Payments.DataLocks.ServiceFabric/SFA.DAS.Payments.DataLocks.ServiceFabric.sfproj;
+      publishWebProjects: false
+      projects: src/SFA.DAS.Payments.DataLocks.Messages/SFA.DAS.Payments.DataLocks.Messages.csproj
       arguments: "-o $(build.artifactstagingdirectory)/publish -c $(BuildConfiguration) --no-restore --no-build"
       modifyOutputPath: true
-      zipAfterPublish: true
+
+  - task: DotNetCoreCLI@2
+    displayName: "Publish $(SolutionBaseName)"
+    inputs:
+      command: publish
+      publishWebProjects: false
+      projects: src/SFA.DAS.Payments.DataLocks.Model/SFA.DAS.Payments.DataLocks.Model.csproj
+      arguments: "-o $(build.artifactstagingdirectory)/publish -c $(BuildConfiguration) --no-restore --no-build"
+      modifyOutputPath: true
+
+  #- task: DotNetCoreCLI@2
+  #  displayName: "Publish $(SolutionBaseName)"
+  #  inputs:
+  #    command: publish
+  #    publishWebProjects: false
+  #    projects: src/SFA.DAS.Payments.DataLocks.DataLockProxyService/SFA.DAS.Payments.DataLocks.DataLockProxyService.csproj
+  #    arguments: "-o $(build.artifactstagingdirectory)/publish -c $(BuildConfiguration) --no-restore --no-build"
+  #    modifyOutputPath: true
+
+  - task: DotNetCoreCLI@2
+    displayName: "Publish $(SolutionBaseName)"
+    inputs:
+      command: publish
+      publishWebProjects: false
+      projects: src/SFA.DAS.Payments.DataLocks.Application/SFA.DAS.Payments.DataLocks.Application.csproj
+      arguments: "-o $(build.artifactstagingdirectory)/publish -c $(BuildConfiguration) --no-restore --no-build"
+      modifyOutputPath: true
+
+  - task: DotNetCoreCLI@2
+    displayName: "Publish $(SolutionBaseName)"
+    inputs:
+      command: publish
+      publishWebProjects: false
+      projects: src/SFA.DAS.Payments.DataLocks.Messages.Internal/SFA.DAS.Payments.DataLocks.Messages.Internal.csproj
+      arguments: "-o $(build.artifactstagingdirectory)/publish -c $(BuildConfiguration) --no-restore --no-build"
+      modifyOutputPath: true
+
+  - task: DotNetCoreCLI@2
+    displayName: "Publish $(SolutionBaseName)"
+    inputs:
+      command: publish
+      publishWebProjects: false
+      projects: src/SFA.DAS.Payments.DataLocks.DataLockService.Interfaces/SFA.DAS.Payments.DataLocks.DataLockService.Interfaces.csproj
+      arguments: "-o $(build.artifactstagingdirectory)/publish -c $(BuildConfiguration) --no-restore --no-build"
+      modifyOutputPath: true
+
+  - task: DotNetCoreCLI@2
+    displayName: "Publish $(SolutionBaseName)"
+    inputs:
+      command: publish
+      publishWebProjects: false
+      projects: src/SFA.DAS.Payments.DataLocks.Domain/SFA.DAS.Payments.DataLocks.Domain.csproj
+      arguments: "-o $(build.artifactstagingdirectory)/publish -c $(BuildConfiguration) --no-restore --no-build"
+      modifyOutputPath: true
+
+      
 
   - task: CopyFiles@2
     displayName: Copy Files to $(build.artifactstagingdirectory)/publish
@@ -120,8 +369,8 @@ jobs:
       DotNetStandardPackagesToPack: |
         src/SFA.DAS.Payments.DataLocks.Messages/SFA.DAS.Payments.DataLocks.Messages.csproj;
         src/SFA.DAS.Payments.DataLocks.Model/SFA.DAS.Payments.DataLocks.Model.csproj;
-        src/SFA.DAS.Payments.DataLocks.DataLockProxyService/SFA.DAS.Payments.DataLocks.DataLockProxyService.csproj;
         src/SFA.DAS.Payments.DataLocks.Application/SFA.DAS.Payments.DataLocks.Application.csproj;
         src/SFA.DAS.Payments.DataLocks.Messages.Internal/SFA.DAS.Payments.DataLocks.Messages.Internal.csproj;
         src/SFA.DAS.Payments.DataLocks.DataLockService.Interfaces/SFA.DAS.Payments.DataLocks.DataLockService.Interfaces.csproj;
         src/src/SFA.DAS.Payments.DataLocks.Domain/SFA.DAS.Payments.DataLocks.Domain.csproj;
+      # src/SFA.DAS.Payments.DataLocks.DataLockProxyService/SFA.DAS.Payments.DataLocks.DataLockProxyService.csproj;
