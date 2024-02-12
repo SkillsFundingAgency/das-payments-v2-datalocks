@@ -4,16 +4,14 @@ using System.Fabric.Description;
 using System.Threading.Tasks;
 using NServiceBus;
 using SFA.DAS.Payments.Application.Infrastructure.Logging;
-using SFA.DAS.Payments.Core;
-using SFA.DAS.Payments.PeriodEnd.Messages.Events;
 using SFA.DAS.Payments.ServiceFabric.Core.Constants;
 
 namespace SFA.DAS.Payments.DataLocks.DataLockProxyService.Handlers
 {
-    public class PeriodEndStartedHandler: IHandleMessages<PeriodEndStartedEvent>
+    public class PeriodEndStartedHandler : IHandleMessages<PeriodEndStartedEvent>
     {
         private readonly IPaymentLogger logger;
-        
+
         public PeriodEndStartedHandler(IPaymentLogger logger)
         {
             this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -24,9 +22,9 @@ namespace SFA.DAS.Payments.DataLocks.DataLockProxyService.Handlers
             logger.LogDebug($"Received period end started event. Details: {message.ToJson()}");
 
             var fabricClient = new FabricClient();
-            var serviceDescription = new DeleteServiceDescription(new Uri(ServiceNames.DatalockApprovalsService)) 
+            var serviceDescription = new DeleteServiceDescription(new Uri(ServiceNames.DatalockApprovalsService))
             {
-                ForceDelete = true,
+                ForceDelete = true
             };
 
             await fabricClient.ServiceManager.DeleteServiceAsync(serviceDescription);
