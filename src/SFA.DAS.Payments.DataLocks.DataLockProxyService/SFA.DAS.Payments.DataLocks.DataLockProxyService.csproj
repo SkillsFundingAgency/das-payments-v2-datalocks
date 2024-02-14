@@ -16,6 +16,7 @@
     <PackageReference Include="SFA.DAS.Payments.Application" Version="1.1.0" />
     <PackageReference Include="SFA.DAS.Payments.EarningEvents.Messages" Version="0.1.123" />
     <PackageReference Include="SFA.DAS.Payments.Monitoring.Jobs.Client" Version="1.1.1" />
+    <PackageReference Include="SFA.DAS.Payments.PeriodEnd.Messages" Version="1.0.0" />
     <PackageReference Include="SFA.DAS.Payments.ServiceFabric.Core" Version="1.1.0" />
     <PackageReference Include="WindowsAzure.ServiceBus" Version="5.0.0" />
   </ItemGroup>
