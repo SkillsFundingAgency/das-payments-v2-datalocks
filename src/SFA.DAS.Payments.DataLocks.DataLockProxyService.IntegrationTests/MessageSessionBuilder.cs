@@ -4,6 +4,7 @@ using Autofac;
 using Microsoft.Extensions.Configuration;
 using NServiceBus;
 using SFA.DAS.Payments.Messages.Common;
+using SFA.DAS.Payments.PeriodEnd.Messages.Events;
 
 namespace SFA.DAS.Payments.DataLocks.DataLockProxyService.IntegrationTests
 {
