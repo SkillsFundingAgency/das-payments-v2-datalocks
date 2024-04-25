@@ -19,8 +19,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SFA.DAS.Payments.DataLocks.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SFA.DAS.Payments.DataLocks.DataLockService", "SFA.DAS.Payments.DataLocks.DataLockService\SFA.DAS.Payments.DataLocks.DataLockService.csproj", "{F72955C8-6AB6-4CFB-9C01-39161B48015C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SFA.DAS.Payments.DataLocks.DataLockProxyService.IntegrationTests", "SFA.DAS.Payments.DataLocks.DataLockProxyService.IntegrationTests\SFA.DAS.Payments.DataLocks.DataLockProxyService.IntegrationTests.csproj", "{11392121-C182-43DC-B59C-5E599147F531}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SFA.DAS.Payments.DataLocks.DataLockProxyService", "SFA.DAS.Payments.DataLocks.DataLockProxyService\SFA.DAS.Payments.DataLocks.DataLockProxyService.csproj", "{C4B0B227-061A-4ACE-BD43-7FB516F09E88}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SFA.DAS.Payments.DataLocks.DataLockEventService", "SFA.DAS.Payments.DataLocks.DataLockEventService\SFA.DAS.Payments.DataLocks.DataLockEventService.csproj", "{FE80B508-E52C-47F0-9353-071AF9478A0B}"
@@ -111,14 +109,6 @@ Global
 		{F72955C8-6AB6-4CFB-9C01-39161B48015C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F72955C8-6AB6-4CFB-9C01-39161B48015C}.Release|x64.ActiveCfg = Release|Any CPU
 		{F72955C8-6AB6-4CFB-9C01-39161B48015C}.Release|x64.Build.0 = Release|Any CPU
-		{11392121-C182-43DC-B59C-5E599147F531}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{11392121-C182-43DC-B59C-5E599147F531}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{11392121-C182-43DC-B59C-5E599147F531}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{11392121-C182-43DC-B59C-5E599147F531}.Debug|x64.Build.0 = Debug|Any CPU
-		{11392121-C182-43DC-B59C-5E599147F531}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{11392121-C182-43DC-B59C-5E599147F531}.Release|Any CPU.Build.0 = Release|Any CPU
-		{11392121-C182-43DC-B59C-5E599147F531}.Release|x64.ActiveCfg = Release|Any CPU
-		{11392121-C182-43DC-B59C-5E599147F531}.Release|x64.Build.0 = Release|Any CPU
 		{C4B0B227-061A-4ACE-BD43-7FB516F09E88}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C4B0B227-061A-4ACE-BD43-7FB516F09E88}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C4B0B227-061A-4ACE-BD43-7FB516F09E88}.Debug|x64.ActiveCfg = Debug|Any CPU
@@ -177,7 +167,6 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{EC58CE65-1FAC-43CC-8263-78A89B403BA7} = {A371C853-4A1C-4163-9622-9E49722DA218}
-		{11392121-C182-43DC-B59C-5E599147F531} = {FD495AB5-01F3-4830-ACFB-781203B19144}
 		{9923C39B-655A-4AE3-A73C-AAA4CDF28226} = {A371C853-4A1C-4163-9622-9E49722DA218}
 		{A371C853-4A1C-4163-9622-9E49722DA218} = {1493C415-DF1C-4462-8685-30118F6F6AB1}
 		{FD495AB5-01F3-4830-ACFB-781203B19144} = {1493C415-DF1C-4462-8685-30118F6F6AB1}
