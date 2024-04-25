@@ -32,7 +32,7 @@ jobs:
       vstsFeed: 'dct-pkg'
       includeNuGetOrg: true
   
-- task: MSBuild@1
+  - task: MSBuild@1
     displayName: 'Build solution'
     inputs:
       solution: '**/*.sln'
@@ -70,7 +70,7 @@ jobs:
       createLogFile: true
       continueOnError: true
 
-- task: DeleteFiles@1
+  - task: DeleteFiles@1
     displayName: 'Delete Symbols files from Artifact Folder '
     inputs:
       SourceFolder: '$(build.artifactstagingdirectory)/ApplicationPackage/'
