@@ -14,7 +14,7 @@ More information here: https://skillsfundingagency.atlassian.net/wiki/spaces/NDL
 
 ## How It Works
 
-This repository contains stateful and stateless ServiceFabric services for handling data lock events (mmismatches between the data held in DAS and SLD)
+This repository contains stateful and stateless ServiceFabric services for handling data lock events (mismatches between the data held in DAS and SLD)
 
 For example:
 
