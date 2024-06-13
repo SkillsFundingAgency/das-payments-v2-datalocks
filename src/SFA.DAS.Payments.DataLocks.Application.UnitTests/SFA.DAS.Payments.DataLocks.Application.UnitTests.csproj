@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Library</OutputType>
-    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <ApplicationIcon />
     <StartupObject />
   </PropertyGroup>
@@ -12,17 +12,17 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Autofac.Extras.Moq" Version="4.3.0" />
-    <PackageReference Include="AutoFixture.AutoMoq" Version="4.11.0" />
-    <PackageReference Include="AutoFixture.NUnit3" Version="4.11.0" />
+    <PackageReference Include="Autofac.Extras.Moq" Version="6.1.1" />
+    <PackageReference Include="AutoFixture.AutoMoq" Version="4.18.1" />
+    <PackageReference Include="AutoFixture.NUnit3" Version="4.18.1" />
     <PackageReference Include="AutoMapper" Version="7.0.1" />
     <PackageReference Include="FluentAssertions" Version="5.6.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="2.2.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="6.0.31" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.8.0" />
     <PackageReference Include="Moq" Version="4.10.0" />
-    <PackageReference Include="NUnit" Version="3.11.0" />
-    <PackageReference Include="NUnit3TestAdapter" Version="3.11.2" />
-    <PackageReference Include="SFA.DAS.CommitmentsV2.Messages" Version="4.1.70" />
+    <PackageReference Include="NUnit" Version="4.1.0" />
+    <PackageReference Include="NUnit3TestAdapter" Version="4.5.0" />
+    <PackageReference Include="SFA.DAS.CommitmentsV2.Messages" Version="100.0.64" />
   </ItemGroup>
 
   <ItemGroup>

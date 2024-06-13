@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Autofac;
 using Autofac.Extras.Moq;
 using AutoMapper;
+using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using SFA.DAS.Payments.Application.Repositories;
@@ -38,8 +40,11 @@ namespace SFA.DAS.Payments.DataLocks.Application.UnitTests.Services
         [SetUp]
         public void SetUp()
         {
-            mocker = AutoMock.GetLoose();
-            mocker.Provide<IMapper>(mapper);
+            mocker = AutoMock.GetLoose(c =>
+            {
+                c.RegisterInstance(mapper.As<IMapper>());
+            });
+
             mocker.Mock<IActorDataCache<List<ApprenticeshipModel>>>()
                 .Setup(x => x.AddOrReplace(It.IsAny<string>(), It.IsAny<List<ApprenticeshipModel>>(),
                     It.IsAny<CancellationToken>()))

@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <IsServiceFabricServiceProject>True</IsServiceFabricServiceProject>
     <ServerGarbageCollection>True</ServerGarbageCollection>
     <RuntimeIdentifier>win7-x64</RuntimeIdentifier>
@@ -15,7 +15,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.ServiceFabric.Actors" Version="3.2.162" />
     <PackageReference Include="Microsoft.ServiceFabric.Data" Version="3.2.162" />
-    <PackageReference Include="SFA.DAS.Payments.EarningEvents.Messages" Version="0.1.123" />
+    <PackageReference Include="SFA.DAS.Payments.EarningEvents.Messages" Version="1.0.3" />
   </ItemGroup>
 
   <ItemGroup>

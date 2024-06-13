@@ -1,4 +1,5 @@
-﻿using Autofac.Extras.Moq;
+﻿using Autofac;
+using Autofac.Extras.Moq;
 using AutoMapper;
 using FluentAssertions;
 using Moq;
@@ -19,7 +20,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Autofac;
 
 namespace SFA.DAS.Payments.DataLocks.Application.UnitTests.Services
 {
@@ -31,15 +31,20 @@ namespace SFA.DAS.Payments.DataLocks.Application.UnitTests.Services
         [SetUp]
         public void SetUp()
         {
+
             mocker = AutoMock.GetLoose();
             var mapperConfiguration = new MapperConfiguration(expression =>
             {
                 expression.AddProfile(typeof(DataLocksProfile));
             });
-            mocker.Provide<IMapper>(new Mapper(mapperConfiguration));
+            mocker = AutoMock.GetLoose(c =>
+            {
+                c.RegisterInstance(new Mapper(mapperConfiguration).As<IMapper>());
+            });
+
 
             mocker.Mock<IEndpointInstance>()
-                .Setup(x => x.Publish(It.IsAny<object>(), It.IsAny<PublishOptions>()))
+                .Setup(x => x.Publish(It.IsAny<object>(), It.IsAny<PublishOptions>(), CancellationToken.None))
                 .Returns(Task.CompletedTask);
             mocker.Mock<IEndpointInstanceFactory>()
                 .Setup(x => x.GetEndpointInstance())
@@ -135,7 +140,7 @@ namespace SFA.DAS.Payments.DataLocks.Application.UnitTests.Services
                         && ev.Id == approvalsEvent.ApprenticeshipId
                         && ev.Ukprn == approvalsEvent.ProviderId
                         && ev.Uln.ToString() == approvalsEvent.Uln),
-                    It.IsAny<PublishOptions>()), Times.Once);
+                    It.IsAny<PublishOptions>(), CancellationToken.None), Times.Once);
         }
 
         [Test]
@@ -183,7 +188,7 @@ namespace SFA.DAS.Payments.DataLocks.Application.UnitTests.Services
                         && ev.Duplicates.Count == 1
                         && ev.Duplicates.All(duplicate => duplicate.ApprenticeshipId == 13 && duplicate.Ukprn == 4321)),
 
-                    It.IsAny<PublishOptions>()), Times.Once);
+                    It.IsAny<PublishOptions>(), CancellationToken.None), Times.Once);
         }
 
         [Test]
@@ -225,7 +230,7 @@ namespace SFA.DAS.Payments.DataLocks.Application.UnitTests.Services
                 .Verify(svc => svc.Publish(It.Is<ApprenticeshipUpdated>(ev =>
                         ev.Id == approvalsEvent.ApprenticeshipId
                         && ev.Uln.ToString() == approvalsEvent.Uln),
-                    It.IsAny<PublishOptions>()), Times.Once);
+                    It.IsAny<PublishOptions>(), CancellationToken.None), Times.Once);
         }
 
         [Test]
@@ -286,7 +291,7 @@ namespace SFA.DAS.Payments.DataLocks.Application.UnitTests.Services
                 .Verify(svc => svc.Publish(It.Is<ApprenticeshipUpdated>(ev =>
                         ev.Id == approvalsEvent.ApprenticeshipId
                         && ev.Uln.ToString() == approvalsEvent.Uln),
-                    It.IsAny<PublishOptions>()), Times.Once);
+                    It.IsAny<PublishOptions>(), CancellationToken.None), Times.Once);
         }
 
         [Test]
@@ -469,7 +474,7 @@ namespace SFA.DAS.Payments.DataLocks.Application.UnitTests.Services
             mocker.Mock<IEndpointInstance>()
                 .Verify(svc => svc.Publish(It.Is<ApprenticeshipUpdated>(ev =>
                         ev.Id == dataLockTriageApprovedEvent.ApprenticeshipId),
-                    It.IsAny<PublishOptions>()), Times.Once);
+                    It.IsAny<PublishOptions>(), CancellationToken.None), Times.Once);
         }
 
         [Test]
@@ -495,7 +500,7 @@ namespace SFA.DAS.Payments.DataLocks.Application.UnitTests.Services
             mocker.Mock<IEndpointInstance>()
                 .Verify(svc => svc.Publish(It.Is<ApprenticeshipUpdated>(ev =>
                         ev.Id == stoppedEvent.ApprenticeshipId),
-                    It.IsAny<PublishOptions>()), Times.Once);
+                    It.IsAny<PublishOptions>(), CancellationToken.None), Times.Once);
 
             mocker.Mock<IApprenticeshipStoppedService>()
                 .Verify(svc => svc.UpdateApprenticeship(It.IsAny<UpdatedApprenticeshipStoppedModel>()), Times.Once);
@@ -522,7 +527,7 @@ namespace SFA.DAS.Payments.DataLocks.Application.UnitTests.Services
             await apprenticeshipProcessor.ProcessStopDateChange(stopDateChangedEvent);
 
             mocker.Mock<IEndpointInstance>()
-                .Verify(svc => svc.Publish(It.Is<ApprenticeshipUpdated>(ev => ev.Id == stopDateChangedEvent.ApprenticeshipId), It.IsAny<PublishOptions>()), Times.Once);
+                .Verify(svc => svc.Publish(It.Is<ApprenticeshipUpdated>(ev => ev.Id == stopDateChangedEvent.ApprenticeshipId), It.IsAny<PublishOptions>(), CancellationToken.None), Times.Once);
 
             mocker.Mock<IApprenticeshipStoppedService>()
                 .Verify(svc => svc.UpdateApprenticeship(It.IsAny<UpdatedApprenticeshipStoppedModel>()), Times.Once);
@@ -548,7 +553,7 @@ namespace SFA.DAS.Payments.DataLocks.Application.UnitTests.Services
             await apprenticeshipProcessor.ProcessPausedApprenticeship(apprenticeshipPausedEvent);
 
             mocker.Mock<IEndpointInstance>()
-                .Verify(svc => svc.Publish(It.Is<ApprenticeshipUpdated>(ev => ev.Id == apprenticeshipPausedEvent.ApprenticeshipId), It.IsAny<PublishOptions>()), Times.Once);
+                .Verify(svc => svc.Publish(It.Is<ApprenticeshipUpdated>(ev => ev.Id == apprenticeshipPausedEvent.ApprenticeshipId), It.IsAny<PublishOptions>(), CancellationToken.None), Times.Once);
 
             mocker.Mock<IApprenticeshipPauseService>()
                 .Verify(svc => svc.UpdateApprenticeship(It.IsAny<UpdatedApprenticeshipPausedModel>()), Times.Once);
@@ -574,7 +579,7 @@ namespace SFA.DAS.Payments.DataLocks.Application.UnitTests.Services
             await apprenticeshipProcessor.ProcessResumedApprenticeship(apprenticeshipResumedEvent);
 
             mocker.Mock<IEndpointInstance>()
-                .Verify(svc => svc.Publish(It.Is<ApprenticeshipUpdated>(ev => ev.Id == apprenticeshipResumedEvent.ApprenticeshipId), It.IsAny<PublishOptions>()), Times.Once);
+                .Verify(svc => svc.Publish(It.Is<ApprenticeshipUpdated>(ev => ev.Id == apprenticeshipResumedEvent.ApprenticeshipId), It.IsAny<PublishOptions>(), CancellationToken.None), Times.Once);
 
             mocker.Mock<IApprenticeshipResumedService>()
                 .Verify(svc => svc.UpdateApprenticeship(It.IsAny<UpdatedApprenticeshipResumedModel>()), Times.Once);
@@ -599,7 +604,7 @@ namespace SFA.DAS.Payments.DataLocks.Application.UnitTests.Services
                                                                      ev.OrderedProviders[0] == paymentOrderChangedEvent.PaymentOrder[0] &&
                                                                      ev.OrderedProviders[1] == paymentOrderChangedEvent.PaymentOrder[1] &&
                                                                      ev.OrderedProviders[2] == paymentOrderChangedEvent.PaymentOrder[2]),
-                    It.IsAny<PublishOptions>()),
+                    It.IsAny<PublishOptions>(), CancellationToken.None),
                     Times.Once);
         }
 
@@ -630,7 +635,7 @@ namespace SFA.DAS.Payments.DataLocks.Application.UnitTests.Services
                 .Verify(svc => svc.Publish(It.Is<ApprenticeshipUpdated>(ev => ev.Id == apprenticeships[0].Id &&
                                                                               ev.EmployerAccountId == apprenticeships[0].AccountId &&
                                                                               ev.IsLevyPayer == apprenticeships[0].IsLevyPayer),
-                    It.IsAny<PublishOptions>()),
+                    It.IsAny<PublishOptions>(), CancellationToken.None),
                     Times.Once);
         }
 
@@ -648,7 +653,7 @@ namespace SFA.DAS.Payments.DataLocks.Application.UnitTests.Services
             await apprenticeshipProcessor.ProcessIsLevyPayerFlagForEmployer(1, false);
 
             mocker.Mock<IEndpointInstance>()
-                .Verify(svc => svc.Publish(It.IsAny<ApprenticeshipUpdated>(), It.IsAny<PublishOptions>()), Times.Never);
+                .Verify(svc => svc.Publish(It.IsAny<ApprenticeshipUpdated>(), It.IsAny<PublishOptions>(), CancellationToken.None), Times.Never);
         }
     }
 }

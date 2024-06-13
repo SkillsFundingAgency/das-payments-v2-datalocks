@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Autofac;
 using Autofac.Extras.Moq;
 using AutoFixture.NUnit3;
 using FluentAssertions;
@@ -26,8 +27,7 @@ namespace SFA.DAS.Payments.DataLocks.Domain.UnitTests.Services.CourseValidation
         [SetUp]
         public void Setup()
         {
-            mocker = AutoMock.GetLoose();
-            mocker.Provide<ICalculatePeriodStartAndEndDate, CalculatePeriodStartAndEndDate>();
+            mocker = AutoMock.GetLoose(cfg => cfg.RegisterInstance(new CalculatePeriodStartAndEndDate().As<ICalculatePeriodStartAndEndDate>()));
             period = new EarningPeriod();
 
         }

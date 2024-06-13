@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Autofac;
 using Autofac.Extras.Moq;
 using AutoMapper;
 using FluentAssertions;
@@ -40,7 +41,8 @@ namespace SFA.DAS.Payments.DataLocks.Application.UnitTests.Services
         [SetUp]
         public void Setup()
         {
-            mocker = AutoMock.GetLoose();
+            mocker = AutoMock.GetLoose(cfg => cfg.RegisterInstance(mapper).As<IMapper>());
+
             apprenticeships = new List<ApprenticeshipModel>
             {
                 new ApprenticeshipModel { Id = 1, AccountId = 456, Uln = Uln, Ukprn = Ukprn },
@@ -50,7 +52,6 @@ namespace SFA.DAS.Payments.DataLocks.Application.UnitTests.Services
             earningEvent = CreateTestEarningEvent(1, 100m, aim);
             earningEvent.LearningAim = aim;
 
-            mocker.Provide(mapper);
             learnerMatcherMock = mocker.Mock<ILearnerMatcher>();
             onProgValidationMock = mocker.Mock<IOnProgrammeAndIncentiveEarningPeriodsValidationProcessor>();
             functionalSkillsValidationMock = mocker.Mock<IFunctionalSkillEarningPeriodsValidationProcessor>();

@@ -9,6 +9,7 @@ using SFA.DAS.Payments.DataLocks.Application.Mapping;
 using SFA.DAS.Payments.DataLocks.Domain.Models;
 using SFA.DAS.Payments.DataLocks.Messages.Events;
 using SFA.DAS.Payments.Model.Core.Entities;
+using ApprenticeshipStatus = SFA.DAS.Payments.Model.Core.Entities.ApprenticeshipStatus;
 
 namespace SFA.DAS.Payments.DataLocks.Application.UnitTests.Mapping
 {
