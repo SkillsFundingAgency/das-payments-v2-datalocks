@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <IsServiceFabricServiceProject>True</IsServiceFabricServiceProject>
     <ServerGarbageCollection>True</ServerGarbageCollection>
     <RuntimeIdentifier>win7-x64</RuntimeIdentifier>
@@ -10,14 +10,20 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Autofac" Version="4.8.1" />
+    <PackageReference Include="Autofac" Version="8.0.0" />
     <PackageReference Include="ESFA.DC.Logging" Version="0.1.4-beta0001" />
-    <PackageReference Include="Microsoft.ServiceFabric.Services" Version="3.2.162" />
-    <PackageReference Include="SFA.DAS.Payments.Application" Version="1.1.0" />
-    <PackageReference Include="SFA.DAS.Payments.EarningEvents.Messages" Version="0.1.123" />
-    <PackageReference Include="SFA.DAS.Payments.Monitoring.Jobs.Client" Version="1.1.1" />
+    <PackageReference Include="Microsoft.ServiceFabric" Version="10.1.1951" />
+    <PackageReference Include="Microsoft.ServiceFabric.Data" Version="7.0.1816" />
+    <PackageReference Include="Microsoft.ServiceFabric.Data.Interfaces" Version="7.0.1816" />
+    <PackageReference Include="Microsoft.ServiceFabric.Diagnostics.Internal" Version="7.0.1816" />
+    <PackageReference Include="Microsoft.ServiceFabric.Services" Version="7.0.1816" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="SFA.DAS.Payments.Application" Version="2.0.0-prerelease-20" />
+    <PackageReference Include="SFA.DAS.Payments.EarningEvents.Messages" Version="1.0.3" />
+    <PackageReference Include="SFA.DAS.Payments.Monitoring.Jobs.Client" Version="2.0.0-prerelease-4" />
     <PackageReference Include="SFA.DAS.Payments.PeriodEnd.Messages" Version="1.1.0" />
-    <PackageReference Include="SFA.DAS.Payments.ServiceFabric.Core" Version="1.1.0" />
+    <PackageReference Include="SFA.DAS.Payments.ServiceFabric.Core" Version="2.0.0-prerelease-5" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.6.0" />
     <PackageReference Include="WindowsAzure.ServiceBus" Version="5.0.0" />
   </ItemGroup>
 

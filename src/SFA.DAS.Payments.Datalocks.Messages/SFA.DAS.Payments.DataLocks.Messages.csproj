@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
@@ -15,9 +15,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="SFA.DAS.Payments.Messages.Common" Version="1.1.0" />
-    <PackageReference Include="SFA.DAS.Payments.Messaging" Version="1.1.0" />
-    <PackageReference Include="SFA.DAS.Payments.Model.Core" Version="1.1.0" />
+    <PackageReference Include="SFA.DAS.Payments.Messages.Common" Version="2.0.0-prerelease-20" />
+    <PackageReference Include="SFA.DAS.Payments.Messaging" Version="2.0.0-prerelease-20" />
+    <PackageReference Include="SFA.DAS.Payments.Model.Core" Version="2.0.0-prerelease-20" />
   </ItemGroup>
 
 </Project>

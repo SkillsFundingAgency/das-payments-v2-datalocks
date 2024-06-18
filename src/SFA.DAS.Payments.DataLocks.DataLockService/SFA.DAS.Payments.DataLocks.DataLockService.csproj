@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <IsServiceFabricServiceProject>True</IsServiceFabricServiceProject>
     <ServerGarbageCollection>True</ServerGarbageCollection>
     <RuntimeIdentifier>win7-x64</RuntimeIdentifier>
@@ -11,14 +11,20 @@
     <ServicePackagePath>PackageRoot</ServicePackagePath>
     <ServicePackagePrefix>$(MSBuildProjectName)</ServicePackagePrefix>
     <FabActUtilWorkingDir>$(BaseIntermediateOutputPath)\FabActUtilTemp</FabActUtilWorkingDir>
+	<GenerateRuntimeConfigDevFile>true</GenerateRuntimeConfigDevFile>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="7.0.1" />
-    <PackageReference Include="Microsoft.ServiceFabric.Actors" Version="3.4.664" />
-    <PackageReference Include="Microsoft.ServiceFabric.Data" Version="3.4.664" />
-    <PackageReference Include="SFA.DAS.Payments.EarningEvents.Messages" Version="0.1.123" />
-    <PackageReference Include="SFA.DAS.Payments.ServiceFabric.Core" Version="1.1.0" />
+    <PackageReference Include="Microsoft.ServiceFabric.Actors" Version="7.0.1816" />
+    <PackageReference Include="Microsoft.ServiceFabric.Data" Version="7.0.1816" />
+    <PackageReference Include="Microsoft.ServiceFabric.Data.Interfaces" Version="7.0.1816" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="SFA.DAS.Payments.EarningEvents.Messages" Version="1.0.3" />
+    <PackageReference Include="SFA.DAS.Payments.ServiceFabric.Core" Version="2.0.0-prerelease-5" />
+    <PackageReference Include="Microsoft.ServiceFabric" Version="10.1.1951" />
+    <PackageReference Include="Microsoft.ServiceFabric.Diagnostics.Internal" Version="7.0.1816" />
+    <PackageReference Include="Microsoft.ServiceFabric.Services" Version="7.0.1816" />
   </ItemGroup>
 
   <ItemGroup>
