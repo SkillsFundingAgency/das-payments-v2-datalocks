@@ -11,6 +11,7 @@
 
   <ItemGroup>
     <PackageReference Include="Autofac" Version="7.0.1" />
+    <PackageReference Include="Microsoft.ServiceFabric" Version="10.0.1816" />
     <PackageReference Include="SFA.DAS.Payments.ServiceFabric.Core" Version="2.0.0-prerelease-7" />
   </ItemGroup>
 
