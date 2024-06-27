@@ -98,8 +98,8 @@ namespace SFA.DAS.Payments.DataLocks.ApprovalsService.Infrastructure
                     t.IsAssignableTo<PaymentOrderChangedEvent>()
                 );
                 
-            var persistence = endpointConfiguration.UsePersistence<AzureStoragePersistence>();
-            persistence.ConnectionString(config.StorageConnectionString);
+            //var persistence = endpointConfiguration.UsePersistence<AzureStoragePersistence>();
+            //persistence.ConnectionString(config.StorageConnectionString);
 
             var transport = endpointConfiguration.UseTransport<AzureServiceBusTransport>();
             transport
