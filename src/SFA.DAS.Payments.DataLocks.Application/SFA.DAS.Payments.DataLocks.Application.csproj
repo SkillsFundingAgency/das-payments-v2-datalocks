@@ -6,23 +6,18 @@
 
   <ItemGroup>
 	<PackageReference Include="Autofac" Version="7.0.1" />
-	<PackageReference Include="Autofac.Extensions.DependencyInjection" Version="8.0.0" />
-    
+	<!--<PackageReference Include="Autofac.Extensions.DependencyInjection" Version="8.0.0" />-->
     <PackageReference Include="SFA.DAS.CommitmentsV2.Messages" Version="100.0.64" />
-
     <PackageReference Include="SFA.DAS.CommitmentsV2.Types" Version="100.0.64" />
-
-    <PackageReference Include="SFA.DAS.Payments.Application" Version="2.0.0-prerelease-26" />
-
+    <PackageReference Include="SFA.DAS.Payments.Application" Version="2.0.0-prerelease-27" />
     <PackageReference Include="SFA.DAS.Payments.EarningEvents.Messages" Version="2.0.0-prerelease-2" />
+    <PackageReference Include="SFA.DAS.Payments.ServiceFabric.Core" Version="2.0.0-prerelease-8" />
 
-    <PackageReference Include="SFA.DAS.Payments.ServiceFabric.Core" Version="2.0.0-prerelease-7" />
-
-    <PackageReference Include="AutoMapper" Version="7.0.1" />
+    <!--<PackageReference Include="AutoMapper" Version="7.0.1" />
     <PackageReference Include="FastMember" Version="1.4.1" />
     <PackageReference Include="NServiceBus" Version="8.1.1" />
     <PackageReference Include="NServiceBus.Callbacks" Version="4.0.0" />
-    <PackageReference Include="NServiceBus.Persistence.AzureTable" Version="5.0.1" />
+    <PackageReference Include="NServiceBus.Persistence.AzureTable" Version="5.0.1" />-->
   </ItemGroup>
 
   <ItemGroup>
