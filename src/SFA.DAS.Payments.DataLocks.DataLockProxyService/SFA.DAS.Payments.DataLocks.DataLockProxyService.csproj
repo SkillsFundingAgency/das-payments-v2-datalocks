@@ -1,22 +1,22 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <OutputType>Exe</OutputType>
-    <TargetFramework>net6.0</TargetFramework>
-    <IsServiceFabricServiceProject>True</IsServiceFabricServiceProject>
-    <ServerGarbageCollection>True</ServerGarbageCollection>
-    <RuntimeIdentifier>win7-x64</RuntimeIdentifier>
-    <TargetLatestRuntimePatch>False</TargetLatestRuntimePatch>
-  </PropertyGroup>
+<PropertyGroup>
+	<OutputType>Exe</OutputType>
+	<TargetFramework>net6.0</TargetFramework>
+	<IsServiceFabricServiceProject>True</IsServiceFabricServiceProject>
+	<ServerGarbageCollection>True</ServerGarbageCollection>
+	<RuntimeIdentifier>win7-x64</RuntimeIdentifier>
+	<TargetLatestRuntimePatch>False</TargetLatestRuntimePatch>
+</PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="ESFA.DC.Logging" Version="0.1.4-beta0001" />
-    <PackageReference Include="SFA.DAS.Payments.Application" Version="2.0.0-prerelease-27" />
+    <PackageReference Include="SFA.DAS.Payments.Application" Version="2.0.2" />
     <PackageReference Include="SFA.DAS.Payments.EarningEvents.Messages" Version="2.0.0-prerelease-2" />
     <PackageReference Include="SFA.DAS.Payments.Monitoring.Jobs.Client" Version="2.0.1-prerelease-4" />
     <PackageReference Include="SFA.DAS.Payments.Monitoring.Jobs.Messages" Version="0.0.14" />
     <PackageReference Include="SFA.DAS.Payments.PeriodEnd.Messages" Version="1.1.0" />
-    <PackageReference Include="SFA.DAS.Payments.ServiceFabric.Core" Version="2.0.0-prerelease-8" />
+    <PackageReference Include="SFA.DAS.Payments.ServiceFabric.Core" Version="2.0.2" />
 
     <!--<PackageReference Include="Autofac.Extensions.DependencyInjection" Version="8.0.0" />
     <PackageReference Include="AutoMapper" Version="7.0.1" />

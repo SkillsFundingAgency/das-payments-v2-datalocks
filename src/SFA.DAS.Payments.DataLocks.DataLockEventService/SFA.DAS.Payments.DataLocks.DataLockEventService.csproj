@@ -13,7 +13,7 @@
     <PackageReference Include="Autofac" Version="7.0.1" />
     <!--<PackageReference Include="Autofac.Extensions.DependencyInjection" Version="8.0.0" />-->
     <PackageReference Include="Microsoft.ServiceFabric" Version="10.0.1816" />
-    <PackageReference Include="SFA.DAS.Payments.ServiceFabric.Core" Version="2.0.0-prerelease-8" />
+    <PackageReference Include="SFA.DAS.Payments.ServiceFabric.Core" Version="2.0.2" />
     <!--<PackageReference Include="AutoMapper" Version="7.0.1" />
     <PackageReference Include="FastMember" Version="1.4.1" />
     <PackageReference Include="NServiceBus" Version="8.1.1" />
