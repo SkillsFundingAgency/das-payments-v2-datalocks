@@ -22,7 +22,7 @@
     <!--<PackageReference Include="Microsoft.ServiceFabric.Actors" Version="6.1.1833" />
     <PackageReference Include="Microsoft.ServiceFabric.Data" Version="6.1.1833" />-->
     <PackageReference Include="Microsoft.ServiceFabric.Diagnostics.Internal" Version="7.0.1010" />
-    <PackageReference Include="SFA.DAS.Payments.ServiceFabric.Core" Version="2.0.2" />
+    <PackageReference Include="SFA.DAS.Payments.ServiceFabric.Core" Version="2.0.3" />
     <!--<PackageReference Include="Microsoft.ServiceFabric.Services" Version="7.0.1001" />-->
   </ItemGroup>
 

@@ -1,4 +1,5 @@
-﻿using Autofac.Extras.Moq;
+﻿using Autofac;
+using Autofac.Extras.Moq;
 using AutoMapper;
 using FluentAssertions;
 using Moq;
@@ -19,7 +20,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Autofac;
 
 namespace SFA.DAS.Payments.DataLocks.Application.UnitTests.Services
 {
@@ -31,12 +31,17 @@ namespace SFA.DAS.Payments.DataLocks.Application.UnitTests.Services
         [SetUp]
         public void SetUp()
         {
+
             mocker = AutoMock.GetLoose();
             var mapperConfiguration = new MapperConfiguration(expression =>
             {
                 expression.AddProfile(typeof(DataLocksProfile));
             });
-            mocker.Provide<IMapper>(new Mapper(mapperConfiguration));
+            mocker = AutoMock.GetLoose(c =>
+            {
+                c.RegisterInstance(new Mapper(mapperConfiguration).As<IMapper>());
+            });
+
 
             mocker.Mock<IEndpointInstance>()
                 .Setup(x => x.Publish(It.IsAny<object>(), It.IsAny<PublishOptions>(), CancellationToken.None))

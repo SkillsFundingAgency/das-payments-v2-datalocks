@@ -13,12 +13,12 @@
     <!--<PackageReference Include="Autofac" Version="4.8.1" />-->
     <!--<PackageReference Include="Azure.Messaging.ServiceBus" Version="7.15.0" />-->
     <PackageReference Include="ESFA.DC.Logging" Version="0.1.4-beta0001" />
-    <PackageReference Include="SFA.DAS.Payments.Application" Version="2.0.3-prerelease-2" />
-    <PackageReference Include="SFA.DAS.Payments.EarningEvents.Messages" Version="2.0.0-prerelease-3" />
+    <PackageReference Include="SFA.DAS.Payments.Application" Version="2.0.5-prerelease-3" />
+    <PackageReference Include="SFA.DAS.Payments.EarningEvents.Messages" Version="2.0.0-prerelease-4" />
     <PackageReference Include="SFA.DAS.Payments.Monitoring.Jobs.Client" Version="2.0.1" />
     <PackageReference Include="SFA.DAS.Payments.Monitoring.Jobs.DataMessages" Version="2.0.1" />
-    <PackageReference Include="SFA.DAS.Payments.PeriodEnd.Messages" Version="1.1.0-prerelease-3" />
-    <PackageReference Include="SFA.DAS.Payments.ServiceFabric.Core" Version="2.0.2" />
+    <PackageReference Include="SFA.DAS.Payments.PeriodEnd.Messages" Version="1.1.1-prerelease-3" />
+    <PackageReference Include="SFA.DAS.Payments.ServiceFabric.Core" Version="2.0.3" />
     <!--<PackageReference Include="Microsoft.ServiceFabric" Version="9.1.1833" />
     <PackageReference Include="Microsoft.ServiceFabric.Diagnostics.Internal" Version="6.1.1833" />
     <PackageReference Include="Microsoft.ServiceFabric.Services" Version="6.1.1833"/> -->
