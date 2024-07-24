@@ -51,13 +51,12 @@ jobs:
       command: build
       projects: '**/*unittest*.csproj'
 
-  # TODO: Uncomment when tests working after Spike integration
-  # - task: DotNetCoreCLI@2
-  #   displayName: 'dotnet test UnitTest Projects'
-  #   inputs:
-  #     command: test
-  #     projects: '**/*unittest*.csproj'
-  #     arguments: '--filter FullyQualifiedName~UnitTests'
+  - task: DotNetCoreCLI@2
+    displayName: 'dotnet test UnitTest Projects'
+    inputs:
+      command: test
+      projects: '**/*unittest*.csproj'
+      arguments: '--filter FullyQualifiedName~UnitTests'
 
   - task: MSBuild@1
     displayName: 'Build solution'
