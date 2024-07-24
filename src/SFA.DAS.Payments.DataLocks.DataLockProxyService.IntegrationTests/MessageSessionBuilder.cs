@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Autofac;
 using Microsoft.Extensions.Configuration;
 using NServiceBus;
-using SFA.DAS.Payments.Messages.Core;
+using SFA.DAS.Payments.Messages.Common;
 using SFA.DAS.Payments.PeriodEnd.Messages.Events;
 
 namespace SFA.DAS.Payments.DataLocks.DataLockProxyService.IntegrationTests
@@ -39,7 +39,7 @@ namespace SFA.DAS.Payments.DataLocks.DataLockProxyService.IntegrationTests
                 .Transactions(TransportTransactionMode.ReceiveOnly);
             var routing = transportConfig.Routing();
             routing.RouteToEndpoint(typeof(PeriodEndStartedEvent).Assembly, "sfa-das-payments-datalock");
-            configuration.UseSerialization<NewtonsoftSerializer>();
+            configuration.UseSerialization<NewtonsoftJsonSerializer>();
             configuration.EnableInstallers();
 
             var container = builder.Build();

@@ -33,6 +33,8 @@ Project("{A07B5EB6-E848-4116-A8D0-A826331D98C6}") = "SFA.DAS.Payments.Datalocks.
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{1493C415-DF1C-4462-8685-30118F6F6AB1}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SFA.DAS.Payments.DataLocks.DataLockProxyService.IntegrationTests", "SFA.DAS.Payments.DataLocks.DataLockProxyService.IntegrationTests\SFA.DAS.Payments.DataLocks.DataLockProxyService.IntegrationTests.csproj", "{D3C4C0D5-E01D-4FB8-8F9E-11EA89F277BF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -157,6 +159,14 @@ Global
 		{9D58FB1A-34EB-4485-98CD-00F638ABFDA4}.Release|x64.ActiveCfg = Release|x64
 		{9D58FB1A-34EB-4485-98CD-00F638ABFDA4}.Release|x64.Build.0 = Release|x64
 		{9D58FB1A-34EB-4485-98CD-00F638ABFDA4}.Release|x64.Deploy.0 = Release|x64
+		{D3C4C0D5-E01D-4FB8-8F9E-11EA89F277BF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D3C4C0D5-E01D-4FB8-8F9E-11EA89F277BF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D3C4C0D5-E01D-4FB8-8F9E-11EA89F277BF}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{D3C4C0D5-E01D-4FB8-8F9E-11EA89F277BF}.Debug|x64.Build.0 = Debug|Any CPU
+		{D3C4C0D5-E01D-4FB8-8F9E-11EA89F277BF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D3C4C0D5-E01D-4FB8-8F9E-11EA89F277BF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D3C4C0D5-E01D-4FB8-8F9E-11EA89F277BF}.Release|x64.ActiveCfg = Release|Any CPU
+		{D3C4C0D5-E01D-4FB8-8F9E-11EA89F277BF}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -164,6 +174,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{EC58CE65-1FAC-43CC-8263-78A89B403BA7} = {1493C415-DF1C-4462-8685-30118F6F6AB1}
 		{9923C39B-655A-4AE3-A73C-AAA4CDF28226} = {1493C415-DF1C-4462-8685-30118F6F6AB1}
+		{D3C4C0D5-E01D-4FB8-8F9E-11EA89F277BF} = {1493C415-DF1C-4462-8685-30118F6F6AB1}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {01694CD1-77FD-4021-90D3-873561B417D3}
