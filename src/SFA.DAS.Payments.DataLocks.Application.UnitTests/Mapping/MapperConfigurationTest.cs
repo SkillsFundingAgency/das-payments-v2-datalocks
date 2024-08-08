@@ -22,15 +22,21 @@ namespace SFA.DAS.Payments.DataLocks.Application.UnitTests.Mapping
         private ApprenticeshipContractType1EarningEvent earningEventPayment;
         private Act1FunctionalSkillEarningsEvent functionalSkillEarningEvent;
 
+        private MapperConfiguration config;
+        private IMapper Mapper;
+
         [OneTimeSetUp]
         public void Initialise()
         {
-            Mapper.Reset();
-            Mapper.Initialize(cfg =>
+            config = null;
+            // Arrange
+            config = new MapperConfiguration(configuration =>
             {
-                cfg.AddProfile<DataLocksProfile>();
+                configuration.AddProfile<DataLocksProfile>();
+
             });
-            Mapper.AssertConfigurationIsValid();
+            config.AssertConfigurationIsValid();
+            Mapper = config.CreateMapper();
         }
 
         [SetUp]
