@@ -22,7 +22,12 @@
     <PackageReference Include="Microsoft.ServiceFabric.Services" Version="6.1.1833"/> -->
 	</ItemGroup>
 
-	<ItemGroup Condition="'$(Configuration)'!='Debug'">
+	<ItemGroup>
+		<PackageReference Include="SFA.DAS.Payments.Monitoring.Jobs.Client" Version="0.2.0-prerelease-957" />
+		<PackageReference Include="SFA.DAS.Payments.Monitoring.Jobs.Messages" Version="0.2.0-prerelease-957" />
+	</ItemGroup>
+		
+	<!--<ItemGroup Condition="'$(Configuration)'!='Debug'">
 		<PackageReference Include="SFA.DAS.Payments.Monitoring.Jobs.Client" Version="0.2.0-prerelease-957" />
 		<PackageReference Include="SFA.DAS.Payments.Monitoring.Jobs.Messages" Version="0.2.0-prerelease-957" />
 	</ItemGroup>
@@ -30,7 +35,7 @@
 	<ItemGroup Condition="'$(Configuration)'=='Debug'">
 		<ProjectReference Include="..\..\..\das-payments-v2-monitoring\src\SFA.DAS.Payments.Monitoring.Jobs.Client\SFA.DAS.Payments.Monitoring.Jobs.Client.csproj" />
 		<ProjectReference Include="..\..\..\das-payments-v2-monitoring\src\SFA.DAS.Payments.Monitoring.Jobs.Messages\SFA.DAS.Payments.Monitoring.Jobs.Messages.csproj" />
-	</ItemGroup>
+	</ItemGroup>-->
 
 	<ItemGroup>
 		<!--<ProjectReference Include="..\SFA.DAS.Payments.Application\SFA.DAS.Payments.Application.csproj" />-->
