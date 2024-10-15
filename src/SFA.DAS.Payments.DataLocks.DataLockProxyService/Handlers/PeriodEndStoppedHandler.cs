@@ -11,10 +11,10 @@ using SFA.DAS.Payments.ServiceFabric.Core.Constants;
 
 namespace SFA.DAS.Payments.DataLocks.DataLockProxyService.Handlers
 {
-    public class PeriodEndStoppedHandler: IHandleMessages<PeriodEndStoppedEvent>
+    public class PeriodEndStoppedHandler : IHandleMessages<PeriodEndStoppedEvent>
     {
-        private readonly IPaymentLogger logger;
         private readonly int instanceCount = -1;
+        private readonly IPaymentLogger logger;
 
         public PeriodEndStoppedHandler(IPaymentLogger logger, IConfigurationHelper configuration)
         {
@@ -37,7 +37,7 @@ namespace SFA.DAS.Payments.DataLocks.DataLockProxyService.Handlers
                 PartitionSchemeDescription = new SingletonPartitionSchemeDescription(),
                 ServiceName = new Uri(ServiceNames.DatalockApprovalsService),
                 ServiceTypeName = "SFA.DAS.Payments.DataLocks.ApprovalsServiceType",
-                InstanceCount = instanceCount,
+                InstanceCount = instanceCount
             };
 
             await fabricClient.ServiceManager.CreateServiceAsync(serviceDescription);

@@ -8,13 +8,13 @@ using SFA.DAS.Payments.PeriodEnd.Messages.Events;
 
 namespace SFA.DAS.Payments.DataLocks.DataLockProxyService.IntegrationTests
 {
-    class MessageSessionBuilder
+    internal class MessageSessionBuilder
     {
         public static async Task<IMessageSession> BuildAsync()
         {
             var conf = new ConfigurationBuilder()
-                    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-                    .AddEnvironmentVariables()
+                .AddJsonFile("appsettings.json", false, true)
+                .AddEnvironmentVariables()
                 .Build();
 
             var connectionString = conf["ServiceBusConnectionString"];
@@ -25,7 +25,7 @@ namespace SFA.DAS.Payments.DataLocks.DataLockProxyService.IntegrationTests
             }
 
             var builder = new ContainerBuilder();
-            
+
             var configuration = new EndpointConfiguration("sfa-das-payments-datalock-integrationtests");
             builder.RegisterInstance(configuration)
                 .SingleInstance();
@@ -33,7 +33,7 @@ namespace SFA.DAS.Payments.DataLocks.DataLockProxyService.IntegrationTests
             conventions.DefiningMessagesAs(type => type.IsMessage());
 
             var transportConfig = configuration.UseTransport<AzureServiceBusTransport>();
-            
+
             transportConfig
                 .ConnectionString(connectionString)
                 .Transactions(TransportTransactionMode.ReceiveOnly);

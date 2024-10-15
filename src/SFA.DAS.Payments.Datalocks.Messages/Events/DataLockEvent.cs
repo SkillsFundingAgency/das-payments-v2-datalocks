@@ -12,19 +12,19 @@ namespace SFA.DAS.Payments.DataLocks.Messages.Events
     [KnownType("GetInheritors")]
     public abstract class DataLockEvent : PaymentsEvent, IContractType1EarningEvent
     {
+        private static Type[] inheritors;
         public Guid EarningEventId { get; set; }
         public List<PriceEpisode> PriceEpisodes { get; set; }
         public short CollectionYear { get; set; }
         public string AgreementId { get; set; }
-        public List<OnProgrammeEarning> OnProgrammeEarnings { get; set; } 
+        public List<OnProgrammeEarning> OnProgrammeEarnings { get; set; }
         public List<IncentiveEarning> IncentiveEarnings { get; set; }
-        
-        private static Type[] inheritors;
+
         private static Type[] GetInheritors()
         {
             return inheritors ?? (inheritors = typeof(DataLockEvent).Assembly.GetTypes()
-                       .Where(x => x.IsSubclassOf(typeof(DataLockEvent)))
-                       .ToArray());
+                .Where(x => x.IsSubclassOf(typeof(DataLockEvent)))
+                .ToArray());
         }
     }
 }
