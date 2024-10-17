@@ -22,15 +22,21 @@ namespace SFA.DAS.Payments.DataLocks.Application.UnitTests.Mapping
         private ApprenticeshipContractType1EarningEvent earningEventPayment;
         private Act1FunctionalSkillEarningsEvent functionalSkillEarningEvent;
 
+        private MapperConfiguration config;
+        private IMapper Mapper;
+
         [OneTimeSetUp]
         public void Initialise()
         {
-            Mapper.Reset();
-            Mapper.Initialize(cfg =>
+            config = null;
+            // Arrange
+            config = new MapperConfiguration(configuration =>
             {
-                cfg.AddProfile<DataLocksProfile>();
+                configuration.AddProfile<DataLocksProfile>();
+
             });
-            Mapper.AssertConfigurationIsValid();
+            config.AssertConfigurationIsValid();
+            Mapper = config.CreateMapper();
         }
 
         [SetUp]
@@ -67,6 +73,7 @@ namespace SFA.DAS.Payments.DataLocks.Application.UnitTests.Mapping
                 CollectionPeriod = new CollectionPeriod { Period = 12, AcademicYear = 1819 },
                 Learner = new Learner { ReferenceNumber = "1234-ref", Uln = 123456 },
                 CollectionYear = 2019,
+                AgeAtStartOfLearning = 17,
                 LearningAim = new LearningAim
                 {
                     PathwayCode = 12,
@@ -222,7 +229,13 @@ namespace SFA.DAS.Payments.DataLocks.Application.UnitTests.Mapping
             payableEarning.Learner.Should().NotBeNull();
             payableEarning.Learner.ReferenceNumber.Should().Be(earningEventPayment.Learner.ReferenceNumber);
         }
-
+        [Test]
+        public void CanMapAgeAtStartOfLearning()
+        {
+            var payableEarning = Mapper.Map<ApprenticeshipContractType1EarningEvent, PayableEarningEvent>(earningEventPayment);
+            payableEarning.Learner.Should().NotBeNull();
+            payableEarning.AgeAtStartOfLearning.Should().Be(17);
+        }
         [Test]
         [TestCaseSource(nameof(GetIncentives))]
         public void CanMapIncentiveEarnings(IncentiveEarningType type)

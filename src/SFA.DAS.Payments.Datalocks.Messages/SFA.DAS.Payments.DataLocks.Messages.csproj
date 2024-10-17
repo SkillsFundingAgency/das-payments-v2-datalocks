@@ -1,23 +1,23 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+	  <!--<TargetFramework>netstandard2.0</TargetFramework>-->
+	  <TargetFrameworks>net472;net6</TargetFrameworks>
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Internal\**" />
-    <EmbeddedResource Remove="Internal\**" />
-    <None Remove="Internal\**" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\SFA.DAS.Payments.DataLocks.Model\SFA.DAS.Payments.DataLocks.Model.csproj" />
+    <!--<ProjectReference Include="..\SFA.DAS.Payments.Messages.Core\SFA.DAS.Payments.Messages.Core.csproj" />
+    <ProjectReference Include="..\SFA.DAS.Payments.Model.Core\SFA.DAS.Payments.Model.Core.csproj" />-->
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="SFA.DAS.Payments.Messages.Common" Version="1.1.0" />
-    <PackageReference Include="SFA.DAS.Payments.Messaging" Version="1.1.0" />
-    <PackageReference Include="SFA.DAS.Payments.Model.Core" Version="1.1.0" />
+    <Folder Include="Internal\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="SFA.DAS.Payments.Messages.Common" Version="2.0.6-prerelease-13" />
+    <PackageReference Include="SFA.DAS.Payments.Model.Core" Version="2.0.6-prerelease-13" />
   </ItemGroup>
 
 </Project>

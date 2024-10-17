@@ -39,7 +39,7 @@ namespace SFA.DAS.Payments.DataLocks.DataLockProxyService.IntegrationTests
                 .Transactions(TransportTransactionMode.ReceiveOnly);
             var routing = transportConfig.Routing();
             routing.RouteToEndpoint(typeof(PeriodEndStartedEvent).Assembly, "sfa-das-payments-datalock");
-            configuration.UseSerialization<NewtonsoftSerializer>();
+            configuration.UseSerialization<NewtonsoftJsonSerializer>();
             configuration.EnableInstallers();
 
             var container = builder.Build();
