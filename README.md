@@ -18,8 +18,8 @@ This repository contains stateful and stateless ServiceFabric services for handl
 
 For example:
 
-* when an apprenticeship is started, stopped, paused, or updated in the DAS Approvals service
-* when apprenticeship details or training provider earnings are updated in the ILR submissions
+* When an apprenticeship is started, stopped, paused, or updated in the DAS Approvals service
+* When apprenticeship details or training provider earnings are updated in the ILR submissions
 
 Where there are differences between the submissions in the DAS systems and ILR data, data lock events will be generated and any earnings that were due to be paid will be held back.
 
@@ -27,9 +27,7 @@ Where there are differences between the submissions in the DAS systems and ILR d
 
 ### Pre-Requisites
 
-* An Azure DevBox configured for Payments V2 development
-
-Setup instructions: https://skillsfundingagency.atlassian.net/wiki/spaces/NDL/pages/950927878/Development+Environment+-+Payments+V2+DAS+Space
+Setup instructions can be found at the following link, which will help you set up your environment and access the correct repositories: https://skillsfundingagency.atlassian.net/wiki/spaces/NDL/pages/950927878/Development+Environment+-+Payments+V2+DAS+Space
 
 ### Config
 
