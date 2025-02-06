@@ -13,7 +13,7 @@
 		<!--<PackageReference Include="Autofac" Version="4.8.1" />-->
 		<!--<PackageReference Include="Azure.Messaging.ServiceBus" Version="7.15.0" />-->
 		<PackageReference Include="ESFA.DC.Logging" Version="0.1.4-beta0001" />
-		<PackageReference Include="SFA.DAS.Payments.Application" Version="2.0.6-prerelease-13" />
+		<PackageReference Include="SFA.DAS.Payments.Application" Version="2.0.6-prerelease-31" />
 		<PackageReference Include="SFA.DAS.Payments.EarningEvents.Messages" Version="2.0.0-prerelease-17" />
 		<PackageReference Include="SFA.DAS.Payments.PeriodEnd.Messages" Version="1.1.1-prerelease-3" />
 		<PackageReference Include="SFA.DAS.Payments.ServiceFabric.Core" Version="2.0.3-prerelease-5" />
@@ -23,8 +23,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="SFA.DAS.Payments.Monitoring.Jobs.Client" Version="0.2.0-prerelease-957" />
-		<PackageReference Include="SFA.DAS.Payments.Monitoring.Jobs.Messages" Version="0.2.0-prerelease-957" />
+		<PackageReference Include="SFA.DAS.Payments.Monitoring.Jobs.Client" Version="0.2.1-prerelease-935" />
+		<PackageReference Include="SFA.DAS.Payments.Monitoring.Jobs.Messages" Version="0.2.1-prerelease-935" />
 	</ItemGroup>
 		
 	<!--<ItemGroup Condition="'$(Configuration)'!='Debug'">
