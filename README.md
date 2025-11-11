@@ -38,7 +38,7 @@ N/A
 
 ## Technologies
 
-* .NetCore 2.1/3.1/6
+* .NetCore 6
 * Azure SQL Server
 * Azure Functions
 * Azure Service Bus
