@@ -27,12 +27,8 @@ Where there are differences between the submissions in the DAS systems and ILR d
 
 ### Pre-Requisites
 
-Setup instructions can be found at the following link, which will help you set up your environment and access the correct repositories: https://skillsfundingagency.atlassian.net/wiki/spaces/NDL/pages/950927878/Development+Environment+-+Payments+V2+DAS+Space
-
-### Config
-
-
-As detailed in: https://skillsfundingagency.atlassian.net/wiki/spaces/NDL/pages/644972941/Developer+Configuration+Settings
+Setup instructions can be found at the following link, which will help you set up your environment and access the correct repositories: 
+https://skillsfundingagency.atlassian.net/wiki/spaces/NDL/pages/4948754681
 
 Select the configuration for the DataLocks application
 
@@ -42,7 +38,7 @@ N/A
 
 ## Technologies
 
-* .NetCore 2.1/3.1/6
+* .NetCore 6
 * Azure SQL Server
 * Azure Functions
 * Azure Service Bus
