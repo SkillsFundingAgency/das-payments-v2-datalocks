@@ -13,9 +13,9 @@
     <PackageReference Include="Autofac.ServiceFabric" Version="4.0.0" />
     <PackageReference Include="ESFA.DC.Logging.Interfaces" Version="0.1.4-beta0001" />
     <PackageReference Include="SFA.DAS.CommitmentsV2.Messages" Version="4.1.70" />
-    <PackageReference Include="SFA.DAS.Payments.Application" Version="2.2.2" />
-    <PackageReference Include="SFA.DAS.Payments.Core" Version="2.2.2" />
-    <PackageReference Include="SFA.DAS.Payments.Messages.Common" Version="2.2.2" />
+    <PackageReference Include="SFA.DAS.Payments.Application" Version="2.2.4-prerelease-2" />
+    <PackageReference Include="SFA.DAS.Payments.Core" Version="2.2.4-prerelease-2" />
+    <PackageReference Include="SFA.DAS.Payments.Messages.Common" Version="2.2.4-prerelease-2" />
     <PackageReference Include="SFA.DAS.Payments.ServiceFabric.Core" Version="2.0.5" />
   </ItemGroup>
 
