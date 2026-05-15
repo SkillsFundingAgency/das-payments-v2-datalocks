@@ -1,6 +1,4 @@
-﻿using System;
-using System.Linq;
-using AutoMapper;
+﻿using AutoMapper;
 using FluentAssertions;
 using NUnit.Framework;
 using SFA.DAS.CommitmentsV2.Messages.Events;
@@ -8,7 +6,12 @@ using SFA.DAS.CommitmentsV2.Types;
 using SFA.DAS.Payments.DataLocks.Application.Mapping;
 using SFA.DAS.Payments.DataLocks.Domain.Models;
 using SFA.DAS.Payments.DataLocks.Messages.Events;
+using SFA.DAS.Payments.Model.Core;
 using SFA.DAS.Payments.Model.Core.Entities;
+using System;
+using System.Linq;
+using LearningType = SFA.DAS.Payments.Model.Core.Entities.LearningType;
+using PriceEpisode = SFA.DAS.CommitmentsV2.Messages.Events.PriceEpisode;
 
 namespace SFA.DAS.Payments.DataLocks.Application.UnitTests.Mapping
 {
@@ -44,7 +47,8 @@ namespace SFA.DAS.Payments.DataLocks.Application.UnitTests.Mapping
                 Uln = "123456",
                 PriceEpisodes = new PriceEpisode[]
                 {
-                    new PriceEpisode { FromDate = DateTime.Today.AddMonths(-12), Cost = 1000M, ToDate = DateTime.Today.AddDays(-1)},
+                    new PriceEpisode
+                        { FromDate = DateTime.Today.AddMonths(-12), Cost = 1000M, ToDate = DateTime.Today.AddDays(-1) },
                     new PriceEpisode { FromDate = DateTime.Today, Cost = 1200M }
                 }
             };
@@ -57,7 +61,7 @@ namespace SFA.DAS.Payments.DataLocks.Application.UnitTests.Mapping
             model.StandardCode.ToString().Should().Be(approvalsEvent.TrainingCode);
             model.Id.Should().Be(approvalsEvent.ApprenticeshipId);
             model.LegalEntityName.Should().Be(approvalsEvent.LegalEntityName);
-            model.Status.Should().Be(ApprenticeshipStatus.Active);
+            model.Status.Should().Be(SFA.DAS.Payments.Model.Core.Entities.ApprenticeshipStatus.Active);
             model.StopDate.Should().BeNull();
             model.TransferSendingEmployerAccountId.Should().Be(approvalsEvent.TransferSenderId);
             model.Ukprn.Should().Be(approvalsEvent.ProviderId);
@@ -88,7 +92,8 @@ namespace SFA.DAS.Payments.DataLocks.Application.UnitTests.Mapping
                 Uln = "123456",
                 PriceEpisodes = new PriceEpisode[]
                 {
-                    new PriceEpisode { FromDate = DateTime.Today.AddMonths(-12), Cost = 1000M, ToDate = DateTime.Today.AddDays(-1)},
+                    new PriceEpisode
+                        { FromDate = DateTime.Today.AddMonths(-12), Cost = 1000M, ToDate = DateTime.Today.AddDays(-1) },
                     new PriceEpisode { FromDate = DateTime.Today, Cost = 1200M }
                 }
             };
@@ -116,7 +121,8 @@ namespace SFA.DAS.Payments.DataLocks.Application.UnitTests.Mapping
                 Uln = "123456",
                 PriceEpisodes = new PriceEpisode[]
                 {
-                    new PriceEpisode { FromDate = DateTime.Today.AddMonths(-12), Cost = 1000M, ToDate = DateTime.Today.AddDays(-1)},
+                    new PriceEpisode
+                        { FromDate = DateTime.Today.AddMonths(-12), Cost = 1000M, ToDate = DateTime.Today.AddDays(-1) },
                     new PriceEpisode { FromDate = DateTime.Today, Cost = 1200M }
                 }
             };
@@ -146,7 +152,8 @@ namespace SFA.DAS.Payments.DataLocks.Application.UnitTests.Mapping
                 Uln = "123456",
                 PriceEpisodes = new PriceEpisode[]
                 {
-                    new PriceEpisode { FromDate = DateTime.Today.AddMonths(-12), Cost = 1000M, ToDate = DateTime.Today.AddDays(-1)},
+                    new PriceEpisode
+                        { FromDate = DateTime.Today.AddMonths(-12), Cost = 1000M, ToDate = DateTime.Today.AddDays(-1) },
                     new PriceEpisode { FromDate = DateTime.Today, Cost = 1200M }
                 }
             };
@@ -169,7 +176,8 @@ namespace SFA.DAS.Payments.DataLocks.Application.UnitTests.Mapping
                 Uln = "123456",
                 PriceEpisodes = new PriceEpisode[]
                 {
-                    new PriceEpisode { FromDate = DateTime.Today.AddMonths(-12), Cost = 1000M, ToDate = DateTime.Today.AddDays(-1)},
+                    new PriceEpisode
+                        { FromDate = DateTime.Today.AddMonths(-12), Cost = 1000M, ToDate = DateTime.Today.AddDays(-1) },
                     new PriceEpisode { FromDate = DateTime.Today, Cost = 1200M }
                 }
             };
@@ -186,7 +194,8 @@ namespace SFA.DAS.Payments.DataLocks.Application.UnitTests.Mapping
             model.Uln.ToString().Should().Be(approvalsEvent.Uln);
             model.ApprenticeshipPriceEpisodes.Count.Should().Be(approvalsEvent.PriceEpisodes.Length);
             approvalsEvent.PriceEpisodes
-                .All(pe => model.ApprenticeshipPriceEpisodes.Any(ape => ape.StartDate == pe.FromDate && ape.Cost == pe.Cost && ape.EndDate == pe.ToDate))
+                .All(pe => model.ApprenticeshipPriceEpisodes.Any(ape =>
+                    ape.StartDate == pe.FromDate && ape.Cost == pe.Cost && ape.EndDate == pe.ToDate))
                 .Should().BeTrue();
         }
 
@@ -201,7 +210,8 @@ namespace SFA.DAS.Payments.DataLocks.Application.UnitTests.Mapping
                 TrainingType = ProgrammeType.Framework,
                 PriceEpisodes = new PriceEpisode[]
                 {
-                    new PriceEpisode { FromDate = DateTime.Today.AddMonths(-12), Cost = 1000M, ToDate = DateTime.Today.AddDays(-1)},
+                    new PriceEpisode
+                        { FromDate = DateTime.Today.AddMonths(-12), Cost = 1000M, ToDate = DateTime.Today.AddDays(-1) },
                     new PriceEpisode { FromDate = DateTime.Today, Cost = 1200M }
                 }
             };
@@ -215,16 +225,17 @@ namespace SFA.DAS.Payments.DataLocks.Application.UnitTests.Mapping
             model.PathwayCode.Should().Be(2);
             model.ApprenticeshipPriceEpisodes.Count.Should().Be(approvalsEvent.PriceEpisodes.Length);
             approvalsEvent.PriceEpisodes
-                .All(pe => model.ApprenticeshipPriceEpisodes.Any(ape => ape.StartDate == pe.FromDate && ape.Cost == pe.Cost && ape.EndDate == pe.ToDate))
+                .All(pe => model.ApprenticeshipPriceEpisodes.Any(ape =>
+                    ape.StartDate == pe.FromDate && ape.Cost == pe.Cost && ape.EndDate == pe.ToDate))
                 .Should().BeTrue();
         }
-        
+
         [Test]
         public void Maps_IsLevyPayer_From_ApprenticeshipUpdated_To_ApprenticeshipModel_Correctly()
         {
             var approvalsEvent = new ApprenticeshipUpdated
             {
-               IsLevyPayer = true
+                IsLevyPayer = true
             };
             var model = Mapper.Map<ApprenticeshipModel>(approvalsEvent);
             model.IsLevyPayer.Should().BeTrue();
@@ -241,5 +252,61 @@ namespace SFA.DAS.Payments.DataLocks.Application.UnitTests.Mapping
             model.IsLevyPayer.Should().BeTrue();
         }
 
+
+        [Test]
+        [TestCase(Common.Domain.Types.LearningType.Apprenticeship, LearningType.Apprenticeship,
+            CourseType.Apprenticeship, 52, "52")]
+        [TestCase(Common.Domain.Types.LearningType.FoundationApprenticeship, LearningType.FoundationApprenticeship,
+            CourseType.Apprenticeship, 52, "52")]
+        [TestCase(Common.Domain.Types.LearningType.ApprenticeshipUnit, LearningType.ApprenticeshipUnit,
+            CourseType.ShortCourse, null, "52")]
+        public void Maps_CourseType_From_ApprenticeshipUpdatedEvent_To_ApprenticeshipModel(
+            Common.Domain.Types.LearningType learningType, LearningType expectedLearningType,
+            CourseType expectedCourseType, long? standardCode, string courseCode)
+        {
+            var approvalsEvent = new ApprenticeshipCreatedEvent
+            {
+                AccountId = 12345,
+                StartDate = DateTime.Today.AddMonths(-12),
+                AccountLegalEntityPublicHashedId = "1234567890",
+                AgreedOn = DateTime.Today.AddMonths(-13),
+                ApprenticeshipId = 12,
+                CreatedOn = DateTime.Today.AddMonths(-14),
+                EndDate = DateTime.Today.AddYears(1),
+                LegalEntityName = "Test Employer",
+                ProviderId = 1234,
+                TrainingCode = "52",
+                TrainingType = ProgrammeType.Standard,
+                TransferSenderId = 123456,
+                Uln = "123456",
+                PriceEpisodes = new PriceEpisode[]
+                {
+                    new PriceEpisode
+                        { FromDate = DateTime.Today.AddMonths(-12), Cost = 1000M, ToDate = DateTime.Today.AddDays(-1) },
+                    new PriceEpisode { FromDate = DateTime.Today, Cost = 1200M }
+                },
+                LearningType = learningType
+            };
+            var model = Mapper.Map<ApprenticeshipModel>(approvalsEvent);
+            model.AccountId.Should().Be(approvalsEvent.AccountId);
+            model.AgreedOnDate.Should().Be(approvalsEvent.AgreedOn);
+            model.AgreementId.Should().Be(approvalsEvent.AccountLegalEntityPublicHashedId);
+            model.EstimatedEndDate.Should().Be(approvalsEvent.EndDate);
+            model.EstimatedStartDate.Should().Be(approvalsEvent.StartDate);
+            model.StandardCode.ToString().Should().Be(standardCode.ToString());
+            model.Id.Should().Be(approvalsEvent.ApprenticeshipId);
+            model.LegalEntityName.Should().Be(approvalsEvent.LegalEntityName);
+            model.Status.Should().Be(SFA.DAS.Payments.Model.Core.Entities.ApprenticeshipStatus.Active);
+            model.StopDate.Should().BeNull();
+            model.TransferSendingEmployerAccountId.Should().Be(approvalsEvent.TransferSenderId);
+            model.Ukprn.Should().Be(approvalsEvent.ProviderId);
+            model.Uln.ToString().Should().Be(approvalsEvent.Uln);
+            model.ApprenticeshipPriceEpisodes.Count.Should().Be(approvalsEvent.PriceEpisodes.Length);
+            approvalsEvent.PriceEpisodes.All(pe => model.ApprenticeshipPriceEpisodes.Any(ape =>
+                ape.StartDate == pe.FromDate && ape.Cost == pe.Cost && ape.EndDate == pe.ToDate)).Should().BeTrue();
+            model.LearningType.Should().Be(expectedLearningType);
+            model.CourseType.Should().Be(expectedCourseType);
+            model.CourseCode.Should().Be(courseCode);
+        }
     }
 }
