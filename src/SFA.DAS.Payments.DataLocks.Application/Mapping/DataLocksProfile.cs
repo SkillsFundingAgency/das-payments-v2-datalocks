@@ -8,8 +8,6 @@ using SFA.DAS.Payments.Model.Core;
 using SFA.DAS.Payments.Model.Core.Audit;
 using SFA.DAS.Payments.Model.Core.Entities;
 using SFA.DAS.Payments.Model.Core.Factories;
-using SFA.DAS.Payments.Model.Core.Incentives;
-using SFA.DAS.Payments.Model.Core.OnProgramme;
 using LearningType = SFA.DAS.Common.Domain.Types.LearningType;
 using PriceEpisode = SFA.DAS.CommitmentsV2.Messages.Events.PriceEpisode;
 
@@ -116,8 +114,7 @@ namespace SFA.DAS.Payments.DataLocks.Application.Mapping
                 .ForMember(dest => dest.Duplicates, opt => opt.Ignore())
                 .ForMember(dest => dest.EventId, opt => opt.Ignore())
                 .ForMember(dest => dest.EventTime, opt => opt.Ignore())
-                .ForMember(dest => dest.ApprenticeshipEmployerType, opt => opt.MapFrom(source => source.ApprenticeshipEmployerType))
-                ;
+                .ForMember(dest => dest.ApprenticeshipEmployerType, opt => opt.MapFrom(source => source.ApprenticeshipEmployerType));
 
             CreateMap<ApprenticeshipUpdated, ApprenticeshipModel>()
                 .ForMember(dest => dest.AccountId, opt => opt.MapFrom(source => source.EmployerAccountId))
@@ -141,7 +138,9 @@ namespace SFA.DAS.Payments.DataLocks.Application.Mapping
                 .ForMember(dest => dest.ApprenticeshipEmployerType, opt => opt.MapFrom(source => source.ApprenticeshipEmployerType))
                 .ForMember(dest => dest.CreationDate, opt => opt.Ignore())
                 .ForMember(dest => dest.ApprenticeshipPauses, opt => opt.Ignore())
-                ;
+                .ForMember(dest => dest.CourseType, opt => opt.Ignore())
+                .ForMember(dest => dest.LearningType, opt => opt.Ignore())
+                .ForMember(dest => dest.CourseCode, opt => opt.Ignore());
 
             CreateMap<ApprenticeshipUpdatedApprovedEvent, UpdatedApprenticeshipApprovedModel>()
                 .ForMember(dest => dest.ApprenticeshipId, opt => opt.MapFrom(source => source.ApprenticeshipId))
