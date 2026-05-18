@@ -262,7 +262,7 @@ namespace SFA.DAS.Payments.DataLocks.Application.UnitTests.Mapping
             CourseType.ShortCourse, null, "52")]
         public void Maps_CourseType_CourseCode_LearningType_From_ApprenticeshipUpdatedEvent_To_ApprenticeshipModel(
             Common.Domain.Types.LearningType learningType, LearningType expectedLearningType,
-            CourseType expectedCourseType, long? standardCode, string courseCode)
+            CourseType expectedCourseType, long? expectedStandardCode, string courseCode)
         {
             var approvalsEvent = new ApprenticeshipCreatedEvent
             {
@@ -293,7 +293,6 @@ namespace SFA.DAS.Payments.DataLocks.Application.UnitTests.Mapping
             model.AgreementId.Should().Be(approvalsEvent.AccountLegalEntityPublicHashedId);
             model.EstimatedEndDate.Should().Be(approvalsEvent.EndDate);
             model.EstimatedStartDate.Should().Be(approvalsEvent.StartDate);
-            model.StandardCode.ToString().Should().Be(standardCode.ToString());
             model.Id.Should().Be(approvalsEvent.ApprenticeshipId);
             model.LegalEntityName.Should().Be(approvalsEvent.LegalEntityName);
             model.Status.Should().Be(SFA.DAS.Payments.Model.Core.Entities.ApprenticeshipStatus.Active);
@@ -304,6 +303,8 @@ namespace SFA.DAS.Payments.DataLocks.Application.UnitTests.Mapping
             model.ApprenticeshipPriceEpisodes.Count.Should().Be(approvalsEvent.PriceEpisodes.Length);
             approvalsEvent.PriceEpisodes.All(pe => model.ApprenticeshipPriceEpisodes.Any(ape =>
                 ape.StartDate == pe.FromDate && ape.Cost == pe.Cost && ape.EndDate == pe.ToDate)).Should().BeTrue();
+
+            model.StandardCode.ToString().Should().Be(expectedStandardCode.ToString());
             model.LearningType.Should().Be(expectedLearningType);
             model.CourseType.Should().Be(expectedCourseType);
             model.CourseCode.Should().Be(courseCode);
