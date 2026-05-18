@@ -260,7 +260,7 @@ namespace SFA.DAS.Payments.DataLocks.Application.UnitTests.Mapping
             CourseType.Apprenticeship, 52, "52")]
         [TestCase(Common.Domain.Types.LearningType.ApprenticeshipUnit, LearningType.ApprenticeshipUnit,
             CourseType.ShortCourse, null, "52")]
-        public void Maps_CourseType_From_ApprenticeshipUpdatedEvent_To_ApprenticeshipModel(
+        public void Maps_CourseType_CourseCode_LearningType_From_ApprenticeshipUpdatedEvent_To_ApprenticeshipModel(
             Common.Domain.Types.LearningType learningType, LearningType expectedLearningType,
             CourseType expectedCourseType, long? standardCode, string courseCode)
         {
