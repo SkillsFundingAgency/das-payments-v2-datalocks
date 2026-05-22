@@ -8,8 +8,7 @@ using SFA.DAS.Payments.Model.Core;
 using SFA.DAS.Payments.Model.Core.Audit;
 using SFA.DAS.Payments.Model.Core.Entities;
 using SFA.DAS.Payments.Model.Core.Factories;
-using SFA.DAS.Payments.Model.Core.Incentives;
-using SFA.DAS.Payments.Model.Core.OnProgramme;
+using LearningType = SFA.DAS.Common.Domain.Types.LearningType;
 using PriceEpisode = SFA.DAS.CommitmentsV2.Messages.Events.PriceEpisode;
 
 namespace SFA.DAS.Payments.DataLocks.Application.Mapping
@@ -24,7 +23,7 @@ namespace SFA.DAS.Payments.DataLocks.Application.Mapping
                 .ForMember(destinationMember => destinationMember.EventId, opt => opt.Ignore())
                 .ForMember(destinationMember => destinationMember.AgeAtStartOfLearning,
                     opt => opt.MapFrom(source => source.AgeAtStartOfLearning));
-                
+
 
             CreateMap<ApprenticeshipContractType1EarningEvent, EarningFailedDataLockMatching>()
                 .ForMember(destinationMember => destinationMember.EarningEventId, opt => opt.MapFrom(source => source.EventId))
@@ -59,7 +58,6 @@ namespace SFA.DAS.Payments.DataLocks.Application.Mapping
                 .ForMember(dest => dest.AgreementId, opt => opt.MapFrom(source => source.AccountLegalEntityPublicHashedId))
                 .ForMember(dest => dest.EstimatedEndDate, opt => opt.MapFrom(source => source.EndDate))
                 .ForMember(dest => dest.EstimatedStartDate, opt => opt.MapFrom(source => source.StartDate))
-                .ForMember(dest => dest.StandardCode, opt => opt.MapFrom(source => source.TrainingCode.ToStandardCode(source.TrainingType)))
                 .ForMember(dest => dest.FrameworkCode, opt => opt.MapFrom(source => source.TrainingCode.ToFrameworkCode(source.TrainingType)))
                 .ForMember(dest => dest.ProgrammeType, opt => opt.MapFrom(source => source.TrainingCode.ToProgrammeType(source.TrainingType)))
                 .ForMember(dest => dest.PathwayCode, opt => opt.MapFrom(source => source.TrainingCode.ToPathwayCode(source.TrainingType)))
@@ -76,16 +74,24 @@ namespace SFA.DAS.Payments.DataLocks.Application.Mapping
                 .ForMember(dest => dest.ApprenticeshipEmployerType, opt => opt.MapFrom<ApprenticeshipEmployerTypeResolver>())
                 .ForMember(dest => dest.CreationDate, opt => opt.Ignore())
                 .ForMember(dest => dest.ApprenticeshipPauses, opt => opt.Ignore())
+
+                //coursecode will be incoming traning code
+
+                .ForMember(dest => dest.StandardCode, opt => opt.MapFrom(source => ResolveStandardCode(source)))
+                .ForMember(dest => dest.CourseType, opt => opt.MapFrom(source => ResolveCourseType(source.LearningType)))
+                .ForMember(dest => dest.LearningType, opt => opt.MapFrom(source => ResolveLearningType(source.LearningType)))
+                .ForMember(dest => dest.CourseCode, opt => opt.MapFrom(source => source.TrainingCode))
                 ;
 
+
             CreateMap<PriceEpisode, ApprenticeshipPriceEpisodeModel>()
-                .ForMember(dest => dest.StartDate, opt => opt.MapFrom(source => source.FromDate))
-                .ForMember(dest => dest.Cost, opt => opt.MapFrom(source => source.Cost))
-                .ForMember(dest => dest.EndDate, opt => opt.MapFrom(source => source.ToDate))
-                .ForMember(dest => dest.ApprenticeshipId, opt => opt.Ignore())
-                .ForMember(dest => dest.Id, opt => opt.Ignore())
-                .ForMember(dest => dest.Removed, opt => opt.Ignore())
-                ;
+                        .ForMember(dest => dest.StartDate, opt => opt.MapFrom(source => source.FromDate))
+                        .ForMember(dest => dest.Cost, opt => opt.MapFrom(source => source.Cost))
+                        .ForMember(dest => dest.EndDate, opt => opt.MapFrom(source => source.ToDate))
+                        .ForMember(dest => dest.ApprenticeshipId, opt => opt.Ignore())
+                        .ForMember(dest => dest.Id, opt => opt.Ignore())
+                        .ForMember(dest => dest.Removed, opt => opt.Ignore())
+                        ;
 
             CreateMap<ApprenticeshipModel, ApprenticeshipUpdated>()
                 .ForMember(dest => dest.EmployerAccountId, opt => opt.MapFrom(source => source.AccountId))
@@ -108,8 +114,7 @@ namespace SFA.DAS.Payments.DataLocks.Application.Mapping
                 .ForMember(dest => dest.Duplicates, opt => opt.Ignore())
                 .ForMember(dest => dest.EventId, opt => opt.Ignore())
                 .ForMember(dest => dest.EventTime, opt => opt.Ignore())
-                .ForMember(dest => dest.ApprenticeshipEmployerType, opt => opt.MapFrom(source => source.ApprenticeshipEmployerType))
-                ;
+                .ForMember(dest => dest.ApprenticeshipEmployerType, opt => opt.MapFrom(source => source.ApprenticeshipEmployerType));
 
             CreateMap<ApprenticeshipUpdated, ApprenticeshipModel>()
                 .ForMember(dest => dest.AccountId, opt => opt.MapFrom(source => source.EmployerAccountId))
@@ -133,8 +138,10 @@ namespace SFA.DAS.Payments.DataLocks.Application.Mapping
                 .ForMember(dest => dest.ApprenticeshipEmployerType, opt => opt.MapFrom(source => source.ApprenticeshipEmployerType))
                 .ForMember(dest => dest.CreationDate, opt => opt.Ignore())
                 .ForMember(dest => dest.ApprenticeshipPauses, opt => opt.Ignore())
-                ;
-            
+                .ForMember(dest => dest.CourseType, opt => opt.Ignore())
+                .ForMember(dest => dest.LearningType, opt => opt.Ignore())
+                .ForMember(dest => dest.CourseCode, opt => opt.Ignore());
+
             CreateMap<ApprenticeshipUpdatedApprovedEvent, UpdatedApprenticeshipApprovedModel>()
                 .ForMember(dest => dest.ApprenticeshipId, opt => opt.MapFrom(source => source.ApprenticeshipId))
                 .ForMember(dest => dest.StandardCode, opt => opt.MapFrom(source => source.TrainingCode.ToStandardCode(source.TrainingType)))
@@ -173,7 +180,7 @@ namespace SFA.DAS.Payments.DataLocks.Application.Mapping
                 .ForMember(dest => dest.LearningAim, opt => opt.Ignore())
                 .ForMember(dest => dest.IncentiveEarnings, opt => opt.Ignore())
                 .ForMember(dest => dest.OnProgrammeEarnings, opt => opt.Ignore());
-          
+
             CreateMap<EarningEventPeriodModel, EarningPeriod>()
                 .ForMember(dest => dest.PriceEpisodeIdentifier, opt => opt.MapFrom(source => source.PriceEpisodeIdentifier))
                 .ForMember(dest => dest.Period, opt => opt.MapFrom(source => source.DeliveryPeriod))
@@ -238,8 +245,48 @@ namespace SFA.DAS.Payments.DataLocks.Application.Mapping
                 .ForMember(dest => dest.Learner, opt => opt.Ignore())
                 .ForMember(dest => dest.LearningAim, opt => opt.Ignore())
                 .ForMember(dest => dest.Earnings, opt => opt.Ignore());
+        }
 
+
+        private static int? ResolveStandardCode(ApprenticeshipCreatedEvent apprenticeshipCreatedEvent)
+        {
+            //if its app units standard code will be null
+            if (apprenticeshipCreatedEvent.LearningType == LearningType.ApprenticeshipUnit)
+            {
+                return null;
+            }
+            else
+            {
+                return apprenticeshipCreatedEvent.TrainingCode.ToStandardCode(apprenticeshipCreatedEvent.TrainingType);
+            }
+        }
+
+        private static SFA.DAS.Payments.Model.Core.Entities.LearningType ResolveLearningType(LearningType learningType)
+        {
+            return learningType switch
+            {
+                LearningType.Apprenticeship => SFA.DAS.Payments.Model.Core.Entities.LearningType.Apprenticeship,
+                LearningType.FoundationApprenticeship => SFA.DAS.Payments.Model.Core.Entities.LearningType.FoundationApprenticeship,
+                LearningType.ApprenticeshipUnit => SFA.DAS.Payments.Model.Core.Entities.LearningType.ApprenticeshipUnit,
+                _ => throw new InvalidOperationException($"Unsupported learning type found. Learning type: {learningType}")
+            };
+        }
+
+        private static CourseType? ResolveCourseType(LearningType learningType)
+        {
+            if (learningType == 0)
+            {
+                return CourseType.Apprenticeship;
+            }
+
+            return learningType switch
+            {
+                LearningType.Apprenticeship or LearningType.FoundationApprenticeship => CourseType.Apprenticeship,
+                LearningType.ApprenticeshipUnit => CourseType.ShortCourse,
+                _ => throw new InvalidOperationException($"Unsupported learning type found when mapping CourseType. Learning type: {learningType}")
+            };
         }
     }
 }
+
 
