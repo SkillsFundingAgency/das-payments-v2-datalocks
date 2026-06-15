@@ -149,6 +149,13 @@ namespace SFA.DAS.Payments.DataLocks.Application.Services
         public async Task ProcessStoppedApprenticeship(ApprenticeshipStoppedEvent apprenticeshipStoppedEvent)
         {
             logger.LogDebug($"Now processing the stopped apprenticeship with  id: {apprenticeshipStoppedEvent.ApprenticeshipId}");
+
+            if (apprenticeshipStoppedEvent.IsWithdrawnViaIlr)
+            {
+                logger.LogInfo($"Stopped apprenticeship with id {apprenticeshipStoppedEvent.ApprenticeshipId} has IsWithdrawnViaIlr = true, skipping processing");
+                return;
+            }
+            
             var model = new UpdatedApprenticeshipStoppedModel
             {
                 ApprenticeshipId = apprenticeshipStoppedEvent.ApprenticeshipId,

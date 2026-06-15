@@ -20,6 +20,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using SFA.DAS.Payments.Application.Infrastructure.Logging;
 
 namespace SFA.DAS.Payments.DataLocks.Application.UnitTests.Services
 {
@@ -49,6 +50,7 @@ namespace SFA.DAS.Payments.DataLocks.Application.UnitTests.Services
             mocker.Mock<IEndpointInstanceFactory>()
                 .Setup(x => x.GetEndpointInstance())
                 .ReturnsAsync(mocker.Mock<IEndpointInstance>().Object);
+            mocker.Mock<IPaymentLogger>();
         }
 
         [Test]
@@ -504,6 +506,38 @@ namespace SFA.DAS.Payments.DataLocks.Application.UnitTests.Services
 
             mocker.Mock<IApprenticeshipStoppedService>()
                 .Verify(svc => svc.UpdateApprenticeship(It.IsAny<UpdatedApprenticeshipStoppedModel>()), Times.Once);
+        }
+
+        [Test]
+        public async Task Process_Apprenticeship_Stopped_WithdrawnFromIlr_Set_To_True_Is_Ignored()
+        {
+            var stoppedEvent = new ApprenticeshipStoppedEvent()
+            {
+                ApprenticeshipId = 1,
+                AppliedOn = DateTime.Today,
+                StopDate = DateTime.Today,
+                IsWithdrawnViaIlr = true
+            };
+
+            mocker.Mock<IApprenticeshipStoppedService>()
+                .Setup(svc => svc.UpdateApprenticeship(It.IsAny<UpdatedApprenticeshipStoppedModel>()))
+                .ReturnsAsync(() => new ApprenticeshipModel
+                {
+                    Id = stoppedEvent.ApprenticeshipId,
+                });
+
+            var apprenticeshipProcessor = mocker.Create<ApprenticeshipProcessor>();
+            await apprenticeshipProcessor.ProcessStoppedApprenticeship(stoppedEvent);
+
+            mocker.Mock<IEndpointInstance>()
+                .Verify(svc => svc.Publish(It.Is<ApprenticeshipUpdated>(ev =>
+                        ev.Id == stoppedEvent.ApprenticeshipId),
+                    It.IsAny<PublishOptions>(), CancellationToken.None), Times.Never);
+
+            mocker.Mock<IApprenticeshipStoppedService>()
+                .Verify(svc => svc.UpdateApprenticeship(It.IsAny<UpdatedApprenticeshipStoppedModel>()), Times.Never);
+
+            mocker.Mock<IPaymentLogger>().Verify(x => x.LogInfo(It.Is<string>(y => y.Contains($"Stopped apprenticeship with id {stoppedEvent.ApprenticeshipId} has IsWithdrawnViaIlr = true, skipping processing")), It.IsAny<object[]>(), It.IsAny<long>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>()), Times.Once);
         }
 
         [Test]
