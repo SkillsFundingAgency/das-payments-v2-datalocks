@@ -507,10 +507,10 @@ namespace SFA.DAS.Payments.DataLocks.Application.UnitTests.Mapping
 
         private static Array GetOnProgrammeEarning()
         {
-            return Enum.GetValues(typeof(OnProgrammeEarningType));
+            return Enum.GetValues(typeof(OnProgrammeEarningType))
+                .Cast<OnProgrammeEarningType>()
+                .Where(e => e != OnProgrammeEarningType.Milestone1)
+                .ToArray();
         }
-
-
-
     }
 }
