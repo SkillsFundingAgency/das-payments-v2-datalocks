@@ -169,6 +169,12 @@ namespace SFA.DAS.Payments.DataLocks.Application.Services
         {
             logger.LogDebug($"Now processing the stop date change event for  apprenticeship with  id: {stopDateChangedEvent.ApprenticeshipId}");
 
+            if (stopDateChangedEvent.IsWithdrawnViaIlr)
+            {
+                logger.LogInfo($"Stopped date change for apprenticeship with id {stopDateChangedEvent.ApprenticeshipId} has IsWithdrawnViaIlr = true, skipping processing");
+                return;
+            }
+
             var model = new UpdatedApprenticeshipStoppedModel
             {
                 ApprenticeshipId = stopDateChangedEvent.ApprenticeshipId,

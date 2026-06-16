@@ -568,6 +568,38 @@ namespace SFA.DAS.Payments.DataLocks.Application.UnitTests.Services
         }
 
         [Test]
+        public async Task Process_Apprenticeship_StopDateChanged_WithdrawnFromIlr_Set_To_True_Is_Ignored()
+        {
+            var stopDateChangedEvent = new ApprenticeshipStopDateChangedEvent()
+            {
+                ApprenticeshipId = 1,
+                ChangedOn = DateTime.Today,
+                StopDate = DateTime.Today,
+                IsWithdrawnViaIlr = true
+            };
+
+            mocker.Mock<IApprenticeshipStoppedService>()
+                .Setup(svc => svc.UpdateApprenticeship(It.IsAny<UpdatedApprenticeshipStoppedModel>()))
+                .ReturnsAsync(() => new ApprenticeshipModel
+                {
+                    Id = stopDateChangedEvent.ApprenticeshipId,
+                });
+
+            var apprenticeshipProcessor = mocker.Create<ApprenticeshipProcessor>();
+            await apprenticeshipProcessor.ProcessStopDateChange(stopDateChangedEvent);
+
+            mocker.Mock<IEndpointInstance>()
+                .Verify(svc => svc.Publish(It.Is<ApprenticeshipUpdated>(ev =>
+                        ev.Id == stopDateChangedEvent.ApprenticeshipId),
+                    It.IsAny<PublishOptions>(), CancellationToken.None), Times.Never);
+
+            mocker.Mock<IApprenticeshipStoppedService>()
+                .Verify(svc => svc.UpdateApprenticeship(It.IsAny<UpdatedApprenticeshipStoppedModel>()), Times.Never);
+
+            mocker.Mock<IPaymentLogger>().Verify(x => x.LogInfo(It.Is<string>(y => y.Contains($"Stopped date change for apprenticeship with id {stopDateChangedEvent.ApprenticeshipId} has IsWithdrawnViaIlr = true, skipping processing")), It.IsAny<object[]>(), It.IsAny<long>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>()), Times.Once);
+        }
+
+        [Test]
         public async Task Process_Apprenticeship_Paused_Correctly()
         {
             var apprenticeshipPausedEvent = new ApprenticeshipPausedEvent()
