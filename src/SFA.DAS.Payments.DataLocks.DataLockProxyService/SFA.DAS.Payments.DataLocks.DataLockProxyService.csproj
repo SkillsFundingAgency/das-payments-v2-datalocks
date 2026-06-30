@@ -5,6 +5,7 @@
 		<TargetFramework>net8.0</TargetFramework>
 		<IsServiceFabricServiceProject>True</IsServiceFabricServiceProject>
 		<ServerGarbageCollection>True</ServerGarbageCollection>
+		<SelfContained>True</SelfContained>
 		<RuntimeIdentifier>win-x64</RuntimeIdentifier>
 		<TargetLatestRuntimePatch>False</TargetLatestRuntimePatch>
 	</PropertyGroup>
