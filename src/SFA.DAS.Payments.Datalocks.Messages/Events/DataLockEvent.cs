@@ -9,8 +9,13 @@ using SFA.DAS.Payments.Model.Core.OnProgramme;
 
 namespace SFA.DAS.Payments.DataLocks.Messages.Events
 {
+    public interface IDataLockEvent: IContractType1EarningEvent
+    {
+        Guid EarningEventId { get; set; }
+    }
+
     [KnownType("GetInheritors")]
-    public abstract class DataLockEvent : PaymentsEvent, IContractType1EarningEvent
+    public abstract class DataLockEvent : PaymentsEvent, IDataLockEvent, IContractType1EarningEvent
     {
         private static Type[] inheritors;
         public Guid EarningEventId { get; set; }
