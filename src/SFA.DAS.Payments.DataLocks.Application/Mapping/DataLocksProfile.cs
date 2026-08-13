@@ -23,6 +23,19 @@ namespace SFA.DAS.Payments.DataLocks.Application.Mapping
                 .ForMember(destinationMember => destinationMember.EventId, opt => opt.Ignore())
                 .ForMember(destinationMember => destinationMember.AgeAtStartOfLearning,
                     opt => opt.MapFrom(source => source.AgeAtStartOfLearning))
+                .ForMember(destinationMember => destinationMember.AgreementId,
+                    opt => opt.MapFrom(source => source.AgreementId))
+                .ForMember(destinationMember => destinationMember.FundingPlatformType,
+                    opt => opt.MapFrom(source => FundingPlatformType.SubmitLearnerData));
+
+            CreateMap<SFA.DAS.Payments.EarningEvents.Messages.Events.GSLApprenticeshipEarningsEvent, PayableGSLApprenticeshipEarningsEvent>()
+                .ForMember(destinationMember => destinationMember.EarningEventId,
+                    opt => opt.MapFrom(source => source.EventId))
+                .ForMember(destinationMember => destinationMember.EventId, opt => opt.Ignore())
+                .ForMember(destinationMember => destinationMember.AgeAtStartOfLearning,
+                    opt => opt.MapFrom(source => source.AgeAtStartOfLearning))
+                .ForMember(destinationMember => destinationMember.AgreementId,
+                    opt => opt.Ignore())  //TODO: Add mapping for AgreementId when implemented in GSLApprenticeshipEarningsEvent
                 .ForMember(destinationMember => destinationMember.FundingPlatformType,
                     opt => opt.MapFrom(source => FundingPlatformType.SubmitLearnerData));
 
