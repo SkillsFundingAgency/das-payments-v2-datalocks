@@ -2,8 +2,10 @@
 using FluentAssertions;
 using NUnit.Framework;
 using SFA.DAS.Payments.DataLocks.Application.Mapping;
+using SFA.DAS.Payments.DataLocks.Messages.Events;
 using SFA.DAS.Payments.EarningEvents.Messages.Events;
 using SFA.DAS.Payments.Model.Core;
+using SFA.DAS.Payments.Model.Core.Entities;
 using SFA.DAS.Payments.Model.Core.Incentives;
 using SFA.DAS.Payments.Model.Core.OnProgramme;
 using System;
@@ -154,7 +156,7 @@ namespace SFA.DAS.Payments.DataLocks.Application.UnitTests.Mapping
         [Test]
         public void CanMapUkprn()
         {
-            var payableEarning = Mapper.Map<GSLApprenticeshipEarningsEvent, GSLApprenticeshipEarningsEvent>(earningEventPayment);
+            var payableEarning = Mapper.Map<GSLApprenticeshipEarningsEvent, PayableEarningEvent>(earningEventPayment);
 
             payableEarning.Ukprn.Should().Be(earningEventPayment.Ukprn);
         }
@@ -162,7 +164,7 @@ namespace SFA.DAS.Payments.DataLocks.Application.UnitTests.Mapping
         [Test]
         public void CanMapCollectionPeriod()
         {
-            var payableEarning = Mapper.Map<GSLApprenticeshipEarningsEvent, GSLApprenticeshipEarningsEvent>(earningEventPayment);
+            var payableEarning = Mapper.Map<GSLApprenticeshipEarningsEvent, PayableEarningEvent>(earningEventPayment);
             payableEarning.CollectionPeriod.Should().NotBeNull();
             payableEarning.CollectionPeriod.AcademicYear.Should().Be(earningEventPayment.CollectionPeriod.AcademicYear);
             payableEarning.CollectionPeriod.Period.Should().Be(earningEventPayment.CollectionPeriod.Period);
@@ -171,35 +173,35 @@ namespace SFA.DAS.Payments.DataLocks.Application.UnitTests.Mapping
         [Test]
         public void CanMapJobId()
         {
-            var payableEarning = Mapper.Map<GSLApprenticeshipEarningsEvent, GSLApprenticeshipEarningsEvent>(earningEventPayment);
+            var payableEarning = Mapper.Map<GSLApprenticeshipEarningsEvent, PayableEarningEvent>(earningEventPayment);
             payableEarning.JobId.Should().Be(earningEventPayment.JobId);
         }
 
         [Test]
         public void CanMapIlrSubmissionDateTime()
         {
-            var payableEarning = Mapper.Map<GSLApprenticeshipEarningsEvent, GSLApprenticeshipEarningsEvent>(earningEventPayment);
+            var payableEarning = Mapper.Map<GSLApprenticeshipEarningsEvent, PayableEarningEvent>(earningEventPayment);
             payableEarning.IlrSubmissionDateTime.Should().Be(earningEventPayment.IlrSubmissionDateTime);
         }
 
         [Test]
         public void CanMapLearningStartDate()
         {
-            var payableEarning = Mapper.Map<GSLApprenticeshipEarningsEvent, GSLApprenticeshipEarningsEvent>(earningEventPayment);
+            var payableEarning = Mapper.Map<GSLApprenticeshipEarningsEvent, PayableEarningEvent>(earningEventPayment);
             payableEarning.StartDate.Should().Be(earningEventPayment.StartDate);
         }
 
         [Test]
         public void CanMapLearner()
         {
-            var payableEarning = Mapper.Map<GSLApprenticeshipEarningsEvent, GSLApprenticeshipEarningsEvent>(earningEventPayment);
+            var payableEarning = Mapper.Map<GSLApprenticeshipEarningsEvent, PayableEarningEvent>(earningEventPayment);
             payableEarning.Learner.Should().NotBeNull();
             payableEarning.Learner.ReferenceNumber.Should().Be(earningEventPayment.Learner.ReferenceNumber);
         }
         [Test]
         public void CanMapAgeAtStartOfLearning()
         {
-            var payableEarning = Mapper.Map<GSLApprenticeshipEarningsEvent, GSLApprenticeshipEarningsEvent>(earningEventPayment);
+            var payableEarning = Mapper.Map<GSLApprenticeshipEarningsEvent, PayableEarningEvent>(earningEventPayment);
             payableEarning.Learner.Should().NotBeNull();
             payableEarning.AgeAtStartOfLearning.Should().Be(17);
         }
@@ -207,7 +209,7 @@ namespace SFA.DAS.Payments.DataLocks.Application.UnitTests.Mapping
         [TestCaseSource(nameof(GetIncentives))]
         public void CanMapIncentiveEarnings(IncentiveEarningType type)
         {
-            var payableEarning = Mapper.Map<GSLApprenticeshipEarningsEvent, GSLApprenticeshipEarningsEvent>(earningEventPayment);
+            var payableEarning = Mapper.Map<GSLApprenticeshipEarningsEvent, PayableEarningEvent>(earningEventPayment);
             payableEarning.IncentiveEarnings.Should().NotBeNull();
 
             var incentivePayment = payableEarning.IncentiveEarnings.Single(o => o.Type == type);
@@ -221,7 +223,7 @@ namespace SFA.DAS.Payments.DataLocks.Application.UnitTests.Mapping
         [TestCaseSource(nameof(GetOnProgrammeEarning))]
         public void CanMapOnProgrammeEarnings(OnProgrammeEarningType type)
         {
-            var payableEarning = Mapper.Map<GSLApprenticeshipEarningsEvent, GSLApprenticeshipEarningsEvent>(earningEventPayment);
+            var payableEarning = Mapper.Map<GSLApprenticeshipEarningsEvent, PayableEarningEvent>(earningEventPayment);
             payableEarning.OnProgrammeEarnings.Should().NotBeNull();
 
             var payment = payableEarning.OnProgrammeEarnings.Single(o => o.Type == type);
@@ -232,9 +234,16 @@ namespace SFA.DAS.Payments.DataLocks.Application.UnitTests.Mapping
         }
 
         [Test]
+        public void Funding_Platform_For_GSL_Earnings_Should_Be_Apprenticeship_Service()
+        {
+            var payableEarning = Mapper.Map<GSLApprenticeshipEarningsEvent, PayableEarningEvent>(earningEventPayment);
+            payableEarning.FundingPlatformType.Should().Be(FundingPlatformType.DigitalApprenticeshipService);
+        }
+
+        [Test]
         public void CanMapPriceEpisode()
         {
-            var payableEarning = Mapper.Map<GSLApprenticeshipEarningsEvent, GSLApprenticeshipEarningsEvent>(earningEventPayment);
+            var payableEarning = Mapper.Map<GSLApprenticeshipEarningsEvent, PayableEarningEvent>(earningEventPayment);
             payableEarning.PriceEpisodes.Should().NotBeNull();
 
             var priceEpisode = payableEarning.PriceEpisodes.First();

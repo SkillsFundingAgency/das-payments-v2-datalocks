@@ -30,7 +30,7 @@ namespace SFA.DAS.Payments.DataLocks.Application.Services
         {
             var dataLockEvents = new List<DataLockEvent>();
 
-            var dataLockEvent = mapper.Map<PayableGSLApprenticeshipEarningsEvent>(earningEvent);
+            var dataLockEvent = mapper.Map<PayableEarningEvent>(earningEvent);
             dataLockEvents.Add(dataLockEvent);
             return dataLockEvents;
         }

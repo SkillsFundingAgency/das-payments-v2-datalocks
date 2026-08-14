@@ -52,7 +52,7 @@ namespace SFA.DAS.Payments.DataLocks.Application.UnitTests.Services
             var dataLockEvents = processor.Process(earningEvent, default).Result;
             dataLockEvents.Should().NotBeEmpty();
             dataLockEvents.Should().HaveCount(1);
-            dataLockEvents.Should().AllBeOfType<PayableGSLApprenticeshipEarningsEvent>();
+            dataLockEvents.Should().AllBeOfType<PayableEarningEvent>();
         }
 
         private GSLApprenticeshipEarningsEvent CreateTestEarningEvent(byte periodsToCreate,
