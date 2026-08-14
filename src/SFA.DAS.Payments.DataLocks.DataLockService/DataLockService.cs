@@ -16,7 +16,7 @@ using SFA.DAS.Payments.DataLocks.Domain.Services.Apprenticeships;
 using SFA.DAS.Payments.DataLocks.Messages.Events;
 using SFA.DAS.Payments.EarningEvents.Messages.Events;
 using SFA.DAS.Payments.Model.Core.Entities;
-
+ 
 namespace SFA.DAS.Payments.DataLocks.DataLockService
 {
     [StatePersistence(StatePersistence.Volatile)]
