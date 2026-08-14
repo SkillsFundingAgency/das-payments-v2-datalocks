@@ -8,10 +8,11 @@ using NServiceBus;
 using SFA.DAS.Payments.Application.Infrastructure.Logging;
 using SFA.DAS.Payments.DataLocks.DataLockService.Interfaces;
 using SFA.DAS.Payments.DataLocks.Messages.Events;
+using SFA.DAS.Payments.EarningEvents.Messages.Events;
 
 namespace SFA.DAS.Payments.DataLocks.DataLockProxyService.Handlers
 {
-    public class GSLApprenticeshipEarningEventHandler: IHandleMessages<PayableGSLApprenticeshipEarningsEvent>
+    public class GSLApprenticeshipEarningEventHandler: IHandleMessages<GSLApprenticeshipEarningsEvent>
     {
         private readonly IActorProxyFactory proxyFactory;
         private readonly IPaymentLogger logger;
@@ -22,7 +23,7 @@ namespace SFA.DAS.Payments.DataLocks.DataLockProxyService.Handlers
             this.logger = logger;
         }
 
-        public async Task Handle(PayableGSLApprenticeshipEarningsEvent message, IMessageHandlerContext context) 
+        public async Task Handle(GSLApprenticeshipEarningsEvent message, IMessageHandlerContext context) 
         {
             var uln = message.Learner.Uln;
             var learnerRef = message.Learner.ReferenceNumber;
@@ -35,7 +36,7 @@ namespace SFA.DAS.Payments.DataLocks.DataLockProxyService.Handlers
                             $"LearnRefNumber: {learnerRef}");
 
             logger.LogVerbose($"Calling actor proxy to handle earning for learner with learner ref {learnerRef}");
-            var dataLockEvents = await actor.HandleEarning(message, CancellationToken.None).ConfigureAwait(false);
+            var dataLockEvents = await actor.HandleGSLEarning(message, CancellationToken.None).ConfigureAwait(false);
             logger.LogDebug($"Earning handled for learner with learner ref {learnerRef}");
 
             if (dataLockEvents != null)

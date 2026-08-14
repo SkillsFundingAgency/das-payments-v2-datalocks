@@ -68,9 +68,9 @@ namespace SFA.DAS.Payments.DataLocks.DataLockService
             }
         }
 
-        public async Task<List<DataLockEvent>> HandleEarning(GSLApprenticeshipEarningsEvent message, CancellationToken cancellationToken)
+        public async Task<List<DataLockEvent>> HandleGSLEarning(GSLApprenticeshipEarningsEvent message, CancellationToken cancellationToken)
         {
-            using (var operation = telemetry.StartOperation("DataLockService.HandleEarning", message.EventId.ToString()))
+            using (var operation = telemetry.StartOperation("DataLockService.HandleGSLEarning", message.EventId.ToString()))
             {
                 var stopwatch = Stopwatch.StartNew();
                 await Initialise().ConfigureAwait(false);
