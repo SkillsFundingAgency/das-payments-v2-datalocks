@@ -24,7 +24,6 @@ namespace SFA.DAS.Payments.DataLocks.Application.UnitTests.Mapping
         public void Initialise()
         {
             config = null;
-            // Arrange
             config = new MapperConfiguration(configuration =>
             {
                 configuration.AddProfile<DataLocksProfile>();
