@@ -29,6 +29,9 @@ namespace SFA.DAS.Payments.DataLocks.Application.Services
         public async Task<List<DataLockEvent>> Process(GSLApprenticeshipEarningsEvent earningEvent, CancellationToken cancellationToken)  
         {
             var dataLockEvents = new List<DataLockEvent>();
+
+            var dataLockEvent = mapper.Map<PayableGSLApprenticeshipEarningsEvent>(earningEvent);
+            dataLockEvents.Add(dataLockEvent);
             return dataLockEvents;
         }
     }
