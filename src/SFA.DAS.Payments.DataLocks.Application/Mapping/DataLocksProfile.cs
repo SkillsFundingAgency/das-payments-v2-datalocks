@@ -36,7 +36,7 @@ namespace SFA.DAS.Payments.DataLocks.Application.Mapping
                 .ForMember(destinationMember => destinationMember.AgeAtStartOfLearning,
                     opt => opt.MapFrom(source => source.AgeAtStartOfLearning))
                 .ForMember(destinationMember => destinationMember.AgreementId,
-                    opt => opt.Ignore())  //TODO: Add mapping for AgreementId when implemented in GSLApprenticeshipEarningsEvent
+                    opt => opt.MapFrom(source => source.AgreementId))
                 .ForMember(destinationMember => destinationMember.FundingPlatformType,
                     opt => opt.MapFrom(source => FundingPlatformType.DigitalApprenticeshipService));
 
