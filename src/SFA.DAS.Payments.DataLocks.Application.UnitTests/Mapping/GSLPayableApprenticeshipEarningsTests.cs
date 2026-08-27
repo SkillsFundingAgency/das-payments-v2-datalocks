@@ -81,7 +81,7 @@ namespace SFA.DAS.Payments.DataLocks.Application.UnitTests.Mapping
                 },
                 IlrSubmissionDateTime = DateTime.MaxValue,
                 EventTime = DateTimeOffset.MaxValue,
-                //AgreementId = "12120002",
+                AgreementId = "12120002",
                 IncentiveEarnings = incentiveEarnings,
                 OnProgrammeEarnings = (new List<OnProgrammeEarning>
                 {
@@ -198,6 +198,14 @@ namespace SFA.DAS.Payments.DataLocks.Application.UnitTests.Mapping
             payableEarning.Learner.Should().NotBeNull();
             payableEarning.Learner.ReferenceNumber.Should().Be(earningEventPayment.Learner.ReferenceNumber);
         }
+
+        [Test]
+        public void CanMapAgreementId()
+        {
+            var payableEarning = Mapper.Map<GSLApprenticeshipEarningsEvent, PayableEarningEvent>(earningEventPayment);
+            payableEarning.AgreementId.Should().Be(earningEventPayment.AgreementId);
+        }
+
         [Test]
         public void CanMapAgeAtStartOfLearning()
         {
