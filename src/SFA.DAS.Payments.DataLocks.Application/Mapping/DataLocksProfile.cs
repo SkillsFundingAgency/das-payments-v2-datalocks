@@ -193,7 +193,8 @@ namespace SFA.DAS.Payments.DataLocks.Application.Mapping
                 .ForMember(dest => dest.TransferSenderAccountId, opt => opt.Ignore())
                 .ForMember(dest => dest.Priority, opt => opt.Ignore())
                 .ForMember(dest => dest.DataLockFailures, opt => opt.Ignore())
-                .ForMember(dest => dest.AgreedOnDate, opt => opt.Ignore());
+                .ForMember(dest => dest.AgreedOnDate, opt => opt.Ignore())
+                .ForMember(dest => dest.IsPaymentPaused, opt => opt.Ignore());
 
             CreateMap<EarningEventModel, Learner>()
                 .ForMember(dest => dest.ReferenceNumber, opt => opt.MapFrom(source => source.LearnerReferenceNumber))

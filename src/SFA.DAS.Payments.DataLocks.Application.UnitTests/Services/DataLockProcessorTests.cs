@@ -10,7 +10,9 @@ using AutoMapper;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
+using SFA.DAS.Payments.Application.Infrastructure.Logging;
 using SFA.DAS.Payments.Application.Messaging;
+using SFA.DAS.Payments.Application.Repositories;
 using SFA.DAS.Payments.DataLocks.Application.Mapping;
 using SFA.DAS.Payments.DataLocks.Application.Services;
 using SFA.DAS.Payments.DataLocks.Domain.Models;
@@ -23,6 +25,7 @@ using SFA.DAS.Payments.Model.Core;
 using SFA.DAS.Payments.Model.Core.Entities;
 using SFA.DAS.Payments.Model.Core.Incentives;
 using SFA.DAS.Payments.Model.Core.OnProgramme;
+using SFA.DAS.Payments.ServiceFabric.Core.Messaging;
 
 namespace SFA.DAS.Payments.DataLocks.Application.UnitTests.Services
 {
@@ -538,5 +541,240 @@ namespace SFA.DAS.Payments.DataLocks.Application.UnitTests.Services
             dataLockEvents.Should().NotBeNull();
             dataLockEvents.Should().HaveCount(0);
         }
+
+
+        [Test]
+        public async Task DoesProcessGSOEarningEventsWithDuplicateValuesButDifferentEarningIds()
+        {
+            var seenKeys = new HashSet<string>();
+            var cacheMock = new Mock<IActorDataCache<EarningEventKey>>();
+            cacheMock
+                .Setup(x => x.Contains(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync((string key, CancellationToken _) => seenKeys.Contains(key));
+            cacheMock
+                .Setup(x => x.Add(It.IsAny<string>(), It.IsAny<EarningEventKey>(), It.IsAny<CancellationToken>()))
+                .Returns((string key, EarningEventKey _, CancellationToken __) =>
+                {
+                    seenKeys.Add(key);
+                    return Task.CompletedTask;
+                });
+
+            var duplicateService = new DuplicateEarningEventService(new Mock<IPaymentLogger>().Object, cacheMock.Object);
+
+            var learnerMatcherTestMock = new Mock<ILearnerMatcher>();
+            var onProgValidationTestMock = new Mock<IOnProgrammeAndIncentiveEarningPeriodsValidationProcessor>();
+            var functionalSkillsValidationTestMock = new Mock<IFunctionalSkillEarningPeriodsValidationProcessor>();
+
+            learnerMatcherTestMock
+                .Setup(x => x.MatchLearner(Ukprn, Uln))
+                .ReturnsAsync(() => new LearnerMatchResult
+                {
+                    DataLockErrorCode = null,
+                    Apprenticeships = apprenticeships
+                })
+                .Verifiable();
+
+            var firstEarningEvent = CreateGSOEarningEvent(Guid.NewGuid());
+            var secondEarningEvent = CreateGSOEarningEvent(Guid.NewGuid());
+
+            onProgValidationTestMock
+                .Setup(x => x.ValidatePeriods(Ukprn, Uln,
+                    It.IsAny<List<PriceEpisode>>(),
+                    It.IsAny<List<EarningPeriod>>(),
+                    It.IsAny<TransactionType>(),
+                    apprenticeships,
+                    aim,
+                    AcademicYear))
+                .Returns(() =>
+                    (new List<EarningPeriod>
+                    {
+                        new EarningPeriod
+                        {
+                            Amount = 100m,
+                            Period = 1,
+                            PriceEpisodeIdentifier = "pe-1"
+                        }
+                    }, new List<EarningPeriod>()))
+                .Verifiable();
+
+            var dataLockProcessor = new DataLockProcessor(
+                mapper,
+                learnerMatcherTestMock.Object,
+                onProgValidationTestMock.Object,
+                functionalSkillsValidationTestMock.Object,
+                duplicateService);
+
+            
+            var firstDataLockEvents = await dataLockProcessor.GetPaymentEvents(firstEarningEvent, default);
+            var secondDataLockEvents = await dataLockProcessor.GetPaymentEvents(secondEarningEvent, default);
+
+            firstDataLockEvents.Should().HaveCount(1);
+            firstDataLockEvents.OfType<PayableEarningEvent>().Should().HaveCount(1);
+
+            secondDataLockEvents.Should().HaveCount(1);
+            secondDataLockEvents.OfType<PayableEarningEvent>().Should().HaveCount(1);
+
+            var expectedKeys = new List<string>
+            {
+                new EarningEventKey(firstEarningEvent).Key,
+                new EarningEventKey(secondEarningEvent).Key
+            };
+
+            seenKeys.Should().BeEquivalentTo(expectedKeys);
+
+            cacheMock.Verify(x => x.Contains(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Exactly(2));
+            cacheMock.Verify(x => x.Add(It.IsAny<string>(), It.IsAny<EarningEventKey>(), It.IsAny<CancellationToken>()), Times.Exactly(2));
+            learnerMatcherTestMock.Verify(x => x.MatchLearner(Ukprn, Uln), Times.Exactly(2));
+            onProgValidationTestMock.Verify(x => x.ValidatePeriods(
+                Ukprn,
+                Uln,
+                It.IsAny<List<PriceEpisode>>(),
+                It.IsAny<List<EarningPeriod>>(),
+                It.IsAny<TransactionType>(),
+                apprenticeships,
+                aim,
+                AcademicYear), Times.Exactly(4));
+        }
+
+        [Test]
+        public async Task DoesNotProcessGSOEarningEventsWithDuplicateValuesButSameEarningIds()
+        {
+            // Arrange
+            var seenKeys = new HashSet<string>();
+            var cacheMock = new Mock<IActorDataCache<EarningEventKey>>();
+            cacheMock
+                .Setup(x => x.Contains(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync((string key, CancellationToken _) => seenKeys.Contains(key));
+            cacheMock
+                .Setup(x => x.Add(It.IsAny<string>(), It.IsAny<EarningEventKey>(), It.IsAny<CancellationToken>()))
+                .Returns((string key, EarningEventKey _, CancellationToken __) =>
+                {
+                    seenKeys.Add(key);
+                    return Task.CompletedTask;
+                });
+
+            var duplicateService = new DuplicateEarningEventService(new Mock<IPaymentLogger>().Object, cacheMock.Object);
+
+            var learnerMatcherTestMock = new Mock<ILearnerMatcher>();
+            var onProgValidationTestMock = new Mock<IOnProgrammeAndIncentiveEarningPeriodsValidationProcessor>();
+            var functionalSkillsValidationTestMock = new Mock<IFunctionalSkillEarningPeriodsValidationProcessor>();
+
+            learnerMatcherTestMock
+                .Setup(x => x.MatchLearner(Ukprn, Uln))
+                .ReturnsAsync(() => new LearnerMatchResult
+                {
+                    DataLockErrorCode = null,
+                    Apprenticeships = apprenticeships
+                })
+                .Verifiable();
+
+            var eventId = Guid.NewGuid();
+            var firstEarningEvent = CreateGSOEarningEvent(eventId);
+            var secondEarningEvent = CreateGSOEarningEvent(eventId);
+
+            onProgValidationTestMock
+                .Setup(x => x.ValidatePeriods(Ukprn, Uln,
+                    It.IsAny<List<PriceEpisode>>(),
+                    It.IsAny<List<EarningPeriod>>(),
+                    It.IsAny<TransactionType>(),
+                    apprenticeships,
+                    aim,
+                    AcademicYear))
+                .Returns(() =>
+                    (new List<EarningPeriod>
+                    {
+                        new EarningPeriod
+                        {
+                            Amount = 100m,
+                            Period = 1,
+                            PriceEpisodeIdentifier = "pe-1"
+                        }
+                    }, new List<EarningPeriod>()))
+                .Verifiable();
+
+            var dataLockProcessor = new DataLockProcessor(
+                mapper,
+                learnerMatcherTestMock.Object,
+                onProgValidationTestMock.Object,
+                functionalSkillsValidationTestMock.Object,
+                duplicateService);
+
+            // Act
+            var firstDataLockEvents = await dataLockProcessor.GetPaymentEvents(firstEarningEvent, default);
+            var secondDataLockEvents = await dataLockProcessor.GetPaymentEvents(secondEarningEvent, default);
+
+            // Assert
+            firstDataLockEvents.Should().HaveCount(1);
+            firstDataLockEvents.OfType<PayableEarningEvent>().Should().HaveCount(1);
+
+            secondDataLockEvents.Should().HaveCount(0);
+
+            var expectedKey = new EarningEventKey(firstEarningEvent).Key;
+            new EarningEventKey(secondEarningEvent).Key.Should().Be(expectedKey);
+            seenKeys.Should().BeEquivalentTo(new[] { expectedKey });
+
+            cacheMock.Verify(x => x.Contains(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Exactly(2));
+            cacheMock.Verify(x => x.Add(It.IsAny<string>(), It.IsAny<EarningEventKey>(), It.IsAny<CancellationToken>()), Times.Once);
+            learnerMatcherTestMock.Verify(x => x.MatchLearner(Ukprn, Uln), Times.Once);
+            onProgValidationTestMock.Verify(x => x.ValidatePeriods(
+                Ukprn,
+                Uln,
+                It.IsAny<List<PriceEpisode>>(),
+                It.IsAny<List<EarningPeriod>>(),
+                It.IsAny<TransactionType>(),
+                apprenticeships,
+                aim,
+                AcademicYear), Times.Exactly(2));
+        }
+
+        private ApprenticeshipContractType1EarningEvent CreateGSOEarningEvent(Guid eventId) => new ApprenticeshipContractType1EarningEvent
+        {
+            EventId = eventId,
+            Learner = new Learner { Uln = Uln },
+            PriceEpisodes = new List<PriceEpisode>
+            {
+                new PriceEpisode
+                {
+                    EffectiveTotalNegotiatedPriceStartDate = DateTime.UtcNow.AddDays(1),
+                    Identifier = "pe-1"
+                }
+            },
+            CollectionYear = AcademicYear,
+            JobId = 0,
+            CollectionPeriod = new CollectionPeriod { Period = 1, AcademicYear = AcademicYear },
+            Ukprn = Ukprn,
+            LearningAim = aim,
+            OnProgrammeEarnings = new List<OnProgrammeEarning>
+            {
+                new OnProgrammeEarning
+                {
+                    Periods = new ReadOnlyCollection<EarningPeriod>(new List<EarningPeriod>
+                    {
+                        new EarningPeriod
+                        {
+                            Amount = 100m,
+                            Period = 1,
+                            PriceEpisodeIdentifier = "pe-1"
+                        }
+                    })
+                }
+            },
+            IncentiveEarnings = new List<IncentiveEarning>
+            {
+                new IncentiveEarning
+                {
+                    Periods = new ReadOnlyCollection<EarningPeriod>(new List<EarningPeriod>
+                    {
+                        new EarningPeriod
+                        {
+                            Amount = 100m,
+                            Period = 1,
+                            PriceEpisodeIdentifier = "pe-1"
+                        }
+                    })
+                }
+            }
+        };
+
     }
 }
