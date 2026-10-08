@@ -26,7 +26,9 @@ namespace SFA.DAS.Payments.DataLocks.Application.Mapping
                 .ForMember(destinationMember => destinationMember.AgreementId,
                     opt => opt.MapFrom(source => source.AgreementId))
                 .ForMember(destinationMember => destinationMember.FundingPlatformType,
-                    opt => opt.MapFrom(source => FundingPlatformType.SubmitLearnerData));
+                    opt => opt.MapFrom(source => FundingPlatformType.SubmitLearnerData))
+                .ForMember(destinationMember => destinationMember.ExternalEarningsId,
+                    opt => opt.MapFrom(source => (Guid?)null));
 
 //            CreateMap<SFA.DAS.Payments.EarningEvents.Messages.Events.GSLApprenticeshipEarningsEvent, PayableGSLApprenticeshipEarningsEvent>()
             CreateMap<SFA.DAS.Payments.EarningEvents.Messages.Events.GSLApprenticeshipEarningsEvent, PayableEarningEvent>()
@@ -38,18 +40,23 @@ namespace SFA.DAS.Payments.DataLocks.Application.Mapping
                 .ForMember(destinationMember => destinationMember.AgreementId,
                     opt => opt.MapFrom(source => source.AgreementId))
                 .ForMember(destinationMember => destinationMember.FundingPlatformType,
-                    opt => opt.MapFrom(source => FundingPlatformType.DigitalApprenticeshipService));
+                    opt => opt.MapFrom(source => FundingPlatformType.DigitalApprenticeshipService))
+                .ForMember(destinationMember => destinationMember.ExternalEarningsId,
+                    opt => opt.MapFrom(source => source.ExternalEarningsId));
 
             CreateMap<ApprenticeshipContractType1EarningEvent, EarningFailedDataLockMatching>()
                 .ForMember(destinationMember => destinationMember.EarningEventId, opt => opt.MapFrom(source => source.EventId))
                 .ForMember(destinationMember => destinationMember.FundingPlatformType,
                     opt => opt.MapFrom(source => FundingPlatformType.SubmitLearnerData))
+                .ForMember(destinationMember => destinationMember.ExternalEarningsId,
+                    opt => opt.MapFrom(source => (Guid?)null))
                 .ForMember(destinationMember => destinationMember.EventId, opt => opt.Ignore());
 
             CreateMap<Act1FunctionalSkillEarningsEvent, PayableFunctionalSkillEarningEvent>()
                 .ForMember(destinationMember => destinationMember.EarningEventId, opt => opt.MapFrom(source => source.EventId))
                 .ForMember(destinationMember => destinationMember.FundingPlatformType,
                     opt => opt.MapFrom(source => FundingPlatformType.SubmitLearnerData))
+                .ForMember(destinationMember => destinationMember.ExternalEarningsId, opt => opt.Ignore())
                 .ForMember(destinationMember => destinationMember.EventId, opt => opt.Ignore());
 
 
@@ -57,6 +64,7 @@ namespace SFA.DAS.Payments.DataLocks.Application.Mapping
                 .ForMember(destinationMember => destinationMember.EarningEventId, opt => opt.MapFrom(source => source.EventId))
                 .ForMember(destinationMember => destinationMember.FundingPlatformType,
                     opt => opt.MapFrom(source => FundingPlatformType.SubmitLearnerData))
+                .ForMember(destinationMember => destinationMember.ExternalEarningsId, opt => opt.Ignore())
                 .ForMember(destinationMember => destinationMember.EventId, opt => opt.Ignore());
 
 
@@ -70,6 +78,7 @@ namespace SFA.DAS.Payments.DataLocks.Application.Mapping
                 .ForMember(destinationMember => destinationMember.EventId, opt => opt.Ignore())
                 .ForMember(destinationMember => destinationMember.FundingPlatformType,
                     opt => opt.MapFrom(source => FundingPlatformType.SubmitLearnerData))
+                .ForMember(destinationMember => destinationMember.ExternalEarningsId, opt => opt.Ignore())
                 .ForMember(dest => dest.AgreementId, opt => opt.Ignore())
                .ForMember(dest => dest.OnProgrammeEarnings, opt => opt.Ignore())
                 .ForMember(dest => dest.IncentiveEarnings, opt => opt.Ignore());

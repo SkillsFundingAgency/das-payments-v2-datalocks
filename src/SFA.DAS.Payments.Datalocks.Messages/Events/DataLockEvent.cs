@@ -13,6 +13,7 @@ namespace SFA.DAS.Payments.DataLocks.Messages.Events
     public interface IDataLockEvent: IContractType1EarningEvent
     {
         Guid EarningEventId { get; set; }
+        Guid? ExternalEarningsId { get; set; }
         FundingPlatformType FundingPlatformType { get; set; } 
     }
 
@@ -21,6 +22,7 @@ namespace SFA.DAS.Payments.DataLocks.Messages.Events
     {
         private static Type[] inheritors;
         public Guid EarningEventId { get; set; }
+        public Guid? ExternalEarningsId { get; set; }
         public List<PriceEpisode> PriceEpisodes { get; set; }
         public short CollectionYear { get; set; }
         public string AgreementId { get; set; }
