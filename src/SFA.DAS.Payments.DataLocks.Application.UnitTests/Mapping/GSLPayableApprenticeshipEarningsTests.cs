@@ -154,6 +154,16 @@ namespace SFA.DAS.Payments.DataLocks.Application.UnitTests.Mapping
         }
 
         [Test]
+        public void CanMapExternalEarningsId()
+        {
+            earningEventPayment.ExternalEarningsId = Guid.NewGuid();
+
+            var payableEarning = Mapper.Map<GSLApprenticeshipEarningsEvent, PayableEarningEvent>(earningEventPayment);
+
+            ((IDataLockEvent)payableEarning).ExternalEarningsId.Should().Be(earningEventPayment.ExternalEarningsId);
+        }
+
+        [Test]
         public void CanMapUkprn()
         {
             var payableEarning = Mapper.Map<GSLApprenticeshipEarningsEvent, PayableEarningEvent>(earningEventPayment);

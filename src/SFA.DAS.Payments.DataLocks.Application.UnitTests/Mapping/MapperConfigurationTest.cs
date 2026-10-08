@@ -187,6 +187,16 @@ namespace SFA.DAS.Payments.DataLocks.Application.UnitTests.Mapping
         }
 
         [Test]
+        public void CanMapAct1ExternalEarningsIdToNull()
+        {
+            var payableEarning = Mapper.Map<ApprenticeshipContractType1EarningEvent, PayableEarningEvent>(earningEventPayment);
+            var failedEarning = Mapper.Map<ApprenticeshipContractType1EarningEvent, EarningFailedDataLockMatching>(earningEventPayment);
+
+            payableEarning.ExternalEarningsId.Should().BeNull();
+            failedEarning.ExternalEarningsId.Should().BeNull();
+        }
+
+        [Test]
         public void CanMapUkprn()
         {
             var payableEarning = Mapper.Map<ApprenticeshipContractType1EarningEvent, PayableEarningEvent>(earningEventPayment);
