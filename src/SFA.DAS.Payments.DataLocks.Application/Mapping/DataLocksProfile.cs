@@ -28,7 +28,7 @@ namespace SFA.DAS.Payments.DataLocks.Application.Mapping
                 .ForMember(destinationMember => destinationMember.FundingPlatformType,
                     opt => opt.MapFrom(source => FundingPlatformType.SubmitLearnerData))
                 .ForMember(destinationMember => destinationMember.ExternalEarningsId,
-                    opt => opt.MapFrom(source => (Guid?)null));
+                     opt => opt.Ignore());
 
 //            CreateMap<SFA.DAS.Payments.EarningEvents.Messages.Events.GSLApprenticeshipEarningsEvent, PayableGSLApprenticeshipEarningsEvent>()
             CreateMap<SFA.DAS.Payments.EarningEvents.Messages.Events.GSLApprenticeshipEarningsEvent, PayableEarningEvent>()
@@ -49,7 +49,7 @@ namespace SFA.DAS.Payments.DataLocks.Application.Mapping
                 .ForMember(destinationMember => destinationMember.FundingPlatformType,
                     opt => opt.MapFrom(source => FundingPlatformType.SubmitLearnerData))
                 .ForMember(destinationMember => destinationMember.ExternalEarningsId,
-                    opt => opt.MapFrom(source => (Guid?)null))
+                    opt => opt.Ignore())
                 .ForMember(destinationMember => destinationMember.EventId, opt => opt.Ignore());
 
             CreateMap<Act1FunctionalSkillEarningsEvent, PayableFunctionalSkillEarningEvent>()
