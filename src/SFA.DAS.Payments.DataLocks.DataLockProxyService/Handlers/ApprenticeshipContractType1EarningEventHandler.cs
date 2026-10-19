@@ -11,6 +11,7 @@ using SFA.DAS.Payments.EarningEvents.Messages.Events;
 
 namespace SFA.DAS.Payments.DataLocks.DataLockProxyService.Handlers
 {
+
     public class ApprenticeshipContractType1EarningEventHandler : IHandleMessages<ApprenticeshipContractType1EarningEvent>
     {
         private readonly IActorProxyFactory proxyFactory;
