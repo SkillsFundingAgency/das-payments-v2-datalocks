@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-	  <TargetFrameworks>net6.0;net8.0</TargetFrameworks>
+	  <TargetFrameworks>net8.0</TargetFrameworks>
   </PropertyGroup>
 
   <ItemGroup>
@@ -10,7 +10,7 @@
     <PackageReference Include="SFA.DAS.CommitmentsV2.Types" Version="100.0.213" />
     <PackageReference Include="SFA.DAS.Payments.Application" Version="2.7.1-prerelease-2" />
     <PackageReference Include="SFA.DAS.Payments.EarningEvents.Messages" Version="2.0.15-prerelease-8" />
-    <PackageReference Include="SFA.DAS.Payments.ServiceFabric.Core" Version="2.0.5" />
+    <PackageReference Include="SFA.DAS.Payments.ServiceFabric.Core" Version="2.0.8" />
   </ItemGroup>
 
   <ItemGroup>
