@@ -7,14 +7,19 @@ namespace SFA.DAS.Payments.DataLocks.Domain.Services.Apprenticeships
 {
     public interface IApprenticeshipEmploymentVerificationService
     {
-        Task<ApprenticeshipEmploymentVerificationModel> Get(Guid correlationId, long apprenticeshipId);
+        Task<ApprenticeshipEmploymentVerificationModel> GetByCorrelationIdAndApprenticeshipId(Guid correlationId, long apprenticeshipId);
         Task CreatePending(ApprenticeshipEmploymentVerificationModel model);
-        Task<bool> UpdatePreEmploymentStatus(Guid correlationId, long apprenticeshipId, EmploymentCheckResult status);
+        Task<bool> SetPreEmploymentStatus(Guid correlationId, long apprenticeshipId, EmploymentCheckResult status);
     }
 
     public class ApprenticeshipEmploymentVerificationService : IApprenticeshipEmploymentVerificationService
     {
         private readonly IApprenticeshipEmploymentVerificationRepository repository;
+
+        public Task<ApprenticeshipEmploymentVerificationModel> GetByCorrelationIdAndApprenticeshipId(Guid correlationId, long apprenticeshipId)
+        {
+            return repository.GetByCorrelationIdAndApprenticeshipId(correlationId, apprenticeshipId);
+        }
 
         public ApprenticeshipEmploymentVerificationService(IApprenticeshipEmploymentVerificationRepository repository)
         {
@@ -26,14 +31,9 @@ namespace SFA.DAS.Payments.DataLocks.Domain.Services.Apprenticeships
             await repository.Add(model).ConfigureAwait(false);
         }
 
-        public Task<bool> UpdatePreEmploymentStatus(Guid correlationId, long apprenticeshipId, EmploymentCheckResult status)
+        public Task<bool> SetPreEmploymentStatus(Guid correlationId, long apprenticeshipId, EmploymentCheckResult status)
         {
-            return repository.UpdatePreEmploymentStatus(correlationId, apprenticeshipId, status);
-        }
-
-        public Task<ApprenticeshipEmploymentVerificationModel> Get(Guid correlationId, long apprenticeshipId)
-        {
-            return repository.Get(correlationId, apprenticeshipId);
+            return repository.SetPreEmploymentStatus(correlationId, apprenticeshipId, status);
         }
     }
 }

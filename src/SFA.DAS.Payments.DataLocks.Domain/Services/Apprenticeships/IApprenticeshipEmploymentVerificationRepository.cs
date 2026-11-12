@@ -7,8 +7,8 @@ namespace SFA.DAS.Payments.DataLocks.Domain.Services.Apprenticeships
 {
     public interface IApprenticeshipEmploymentVerificationRepository : IDisposable
     {
-        Task<ApprenticeshipEmploymentVerificationModel> Get(Guid correlationId, long apprenticeshipId);
+        Task<ApprenticeshipEmploymentVerificationModel> GetByCorrelationIdAndApprenticeshipId(Guid correlationId, long apprenticeshipId);
         Task Add(ApprenticeshipEmploymentVerificationModel request);
-        Task<bool> UpdatePreEmploymentStatus(Guid correlationId, long apprenticeshipId, EmploymentCheckResult status);
+        Task<bool> SetPreEmploymentStatus(Guid correlationId, long apprenticeshipId, EmploymentCheckResult status);
     }
 }

@@ -38,7 +38,7 @@ namespace SFA.DAS.Payments.DataLocks.Application.Services
                     : EmploymentCheckResult.Employed;
 
                 var updated = await employmentVerificationService
-                    .UpdatePreEmploymentStatus(completedMessage.CorrelationId, completedMessage.ApprenticeshipId, status)
+                    .SetPreEmploymentStatus(completedMessage.CorrelationId, completedMessage.ApprenticeshipId, status)
                     .ConfigureAwait(false);
 
                 if (!updated)

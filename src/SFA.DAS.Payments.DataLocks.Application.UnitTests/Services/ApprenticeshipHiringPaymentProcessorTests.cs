@@ -180,7 +180,7 @@ namespace SFA.DAS.Payments.DataLocks.Application.UnitTests.Services
         }
 
         [Test]
-        public async Task Process_ForOtherEligibleStartDate_Uses90DayLookback()
+        public async Task Process_ForOtherEligibleStartDate_Uses150DayLookback()
         {
             VerifyNotEmployed publishedMessage = null;
 
@@ -197,7 +197,7 @@ namespace SFA.DAS.Payments.DataLocks.Application.UnitTests.Services
                 CreateEvent(new DateTime(2026, 10, 2), new DateTime(2001, 10, 3)));
 
             publishedMessage.Should().NotBeNull();
-            publishedMessage.StartDate.Should().Be(new DateTime(2026, 7, 4));
+            publishedMessage.StartDate.Should().Be(new DateTime(2026, 5, 5));
             publishedMessage.DurationInDays.Should().Be(60);
         }
 

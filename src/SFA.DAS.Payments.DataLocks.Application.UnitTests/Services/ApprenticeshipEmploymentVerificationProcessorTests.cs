@@ -32,7 +32,7 @@ namespace SFA.DAS.Payments.DataLocks.Application.UnitTests.Services
             var correlationId = Guid.NewGuid();
 
             employmentVerificationService
-                .Setup(service => service.UpdatePreEmploymentStatus(correlationId, 123, expectedStatus))
+                .Setup(service => service.SetPreEmploymentStatus(correlationId, 123, expectedStatus))
                 .ReturnsAsync(true);
 
             await CreateSut().Process(new VerifyNotEmployedCompleted
@@ -43,7 +43,7 @@ namespace SFA.DAS.Payments.DataLocks.Application.UnitTests.Services
             });
 
             employmentVerificationService.Verify(
-                service => service.UpdatePreEmploymentStatus(correlationId, 123, expectedStatus),
+                service => service.SetPreEmploymentStatus(correlationId, 123, expectedStatus),
                 Times.Once);
         }
 
@@ -53,7 +53,7 @@ namespace SFA.DAS.Payments.DataLocks.Application.UnitTests.Services
             var correlationId = Guid.NewGuid();
 
             employmentVerificationService
-                .Setup(service => service.UpdatePreEmploymentStatus(
+                .Setup(service => service.SetPreEmploymentStatus(
                     correlationId,
                     123,
                     EmploymentCheckResult.NotEmployed))
@@ -69,7 +69,7 @@ namespace SFA.DAS.Payments.DataLocks.Application.UnitTests.Services
             await action.Should().NotThrowAsync();
 
             employmentVerificationService.Verify(
-                service => service.UpdatePreEmploymentStatus(
+                service => service.SetPreEmploymentStatus(
                     correlationId,
                     123,
                     EmploymentCheckResult.NotEmployed),
@@ -91,7 +91,7 @@ namespace SFA.DAS.Payments.DataLocks.Application.UnitTests.Services
             var expectedException = new InvalidOperationException("Service failure");
 
             employmentVerificationService
-                .Setup(service => service.UpdatePreEmploymentStatus(
+                .Setup(service => service.SetPreEmploymentStatus(
                     correlationId,
                     123,
                     EmploymentCheckResult.Employed))

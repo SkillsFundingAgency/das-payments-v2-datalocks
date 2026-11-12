@@ -26,7 +26,7 @@ namespace SFA.DAS.Payments.DataLocks.Application.Services
         private readonly IApprenticeshipEmploymentVerificationService employmentVerificationService;
 
         private const int LearnerAgeThreshold = 25;
-        private const int MaximumPreEmploymentDays = 90;
+        private const int MaximumPreEmploymentDays = 150;
         private const int PreEmploymentCheckDurationDays = 60;
 
         private static readonly DateTime EarliestEligibleLearningStartDate = new DateTime(2026, 10, 1);

@@ -17,7 +17,7 @@ namespace SFA.DAS.Payments.DataLocks.Application.Repositories
             this.dataContext = dataContext;
         }
 
-        public async Task<ApprenticeshipEmploymentVerificationModel> Get(Guid correlationId, long apprenticeshipId)
+        public async Task<ApprenticeshipEmploymentVerificationModel> GetByCorrelationIdAndApprenticeshipId(Guid correlationId, long apprenticeshipId)
         {
             return await dataContext.ApprenticeshipEmploymentVerification
                 .FirstOrDefaultAsync(x =>
@@ -32,7 +32,7 @@ namespace SFA.DAS.Payments.DataLocks.Application.Repositories
             await dataContext.SaveChangesAsync().ConfigureAwait(false);
         }
 
-        public async Task<bool> UpdatePreEmploymentStatus(Guid correlationId, long apprenticeshipId, EmploymentCheckResult status)
+        public async Task<bool> SetPreEmploymentStatus(Guid correlationId, long apprenticeshipId, EmploymentCheckResult status)
         {
             var record = await dataContext.ApprenticeshipEmploymentVerification
                 .FirstOrDefaultAsync(x =>
