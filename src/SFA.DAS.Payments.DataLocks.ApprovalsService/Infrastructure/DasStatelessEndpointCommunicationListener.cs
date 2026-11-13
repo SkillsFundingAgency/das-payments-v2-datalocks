@@ -12,6 +12,9 @@ using SFA.DAS.Payments.Application.Infrastructure.Telemetry;
 using SFA.DAS.Payments.Application.Messaging;
 using SFA.DAS.Payments.Core.Configuration;
 using SFA.DAS.Payments.ServiceFabric.Core;
+using SFA.DAS.Payments.DataLocks.Messages.Events;
+using SFA.DAS.EmploymentVerificationService.Messages.Learner.Commands;
+using SFA.DAS.EmploymentVerificationService.Messages.Learner.Events;
 
 namespace SFA.DAS.Payments.DataLocks.ApprovalsService.Infrastructure
 {
@@ -85,7 +88,9 @@ namespace SFA.DAS.Payments.DataLocks.ApprovalsService.Infrastructure
                     t.IsAssignableTo<ApprenticeshipStopDateChangedEvent>() ||
                     t.IsAssignableTo<ApprenticeshipPausedEvent>() ||
                     t.IsAssignableTo<ApprenticeshipResumedEvent>() ||
-                    t.IsAssignableTo<PaymentOrderChangedEvent>()
+                    t.IsAssignableTo<PaymentOrderChangedEvent>() ||
+                    t.IsAssignableTo<VerifyNotEmployed>() ||
+                    t.IsAssignableTo<VerifyNotEmployedCompleted>()
                 )
                 .DefiningEventsAs(t =>
                     t.IsAssignableTo<ApprenticeshipCreatedEvent>() ||
@@ -95,7 +100,9 @@ namespace SFA.DAS.Payments.DataLocks.ApprovalsService.Infrastructure
                     t.IsAssignableTo<ApprenticeshipStopDateChangedEvent>() ||
                     t.IsAssignableTo<ApprenticeshipPausedEvent>() ||
                     t.IsAssignableTo<ApprenticeshipResumedEvent>() ||
-                    t.IsAssignableTo<PaymentOrderChangedEvent>()
+                    t.IsAssignableTo<PaymentOrderChangedEvent>() ||
+                    t.IsAssignableTo<VerifyNotEmployed>() ||
+                    t.IsAssignableTo<VerifyNotEmployedCompleted>()
                 );
                 
             //var persistence = endpointConfiguration.UsePersistence<AzureStoragePersistence>();
