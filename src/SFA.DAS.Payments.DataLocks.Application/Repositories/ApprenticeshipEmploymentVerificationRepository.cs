@@ -32,7 +32,7 @@ namespace SFA.DAS.Payments.DataLocks.Application.Repositories
             await dataContext.SaveChangesAsync().ConfigureAwait(false);
         }
 
-        public async Task<bool> SetPreEmploymentStatus(Guid correlationId, long apprenticeshipId, EmploymentCheckResult status)
+        public async Task<bool> SetPreEmploymentStatus(Guid correlationId, long apprenticeshipId, EmploymentValidationStatus status)
         {
             var record = await dataContext.ApprenticeshipEmploymentVerification
                 .FirstOrDefaultAsync(x =>

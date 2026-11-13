@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using AutoMapper;
 using NServiceBus;
 using SFA.DAS.CommitmentsV2.Messages.Events;
+using SFA.DAS.EmploymentVerificationService.Messages.Learner.Commands;
+using SFA.DAS.EmploymentVerificationService.Messages.Learner.Events;
 using SFA.DAS.Payments.Application.Infrastructure.Logging;
 using SFA.DAS.Payments.Application.Messaging;
 using SFA.DAS.Payments.DataLocks.Domain.Services.Apprenticeships;
@@ -16,6 +18,7 @@ namespace SFA.DAS.Payments.DataLocks.Application.Services
     public interface IApprenticeshipHiringPaymentProcessor
     {
         Task Process(ApprenticeshipCreatedEvent createdEvent);
+        Task ProcessCompleted(VerifyNotEmployedCompleted completedMessage);
     }
 
     public class ApprenticeshipHiringPaymentProcessor : IApprenticeshipHiringPaymentProcessor
@@ -78,7 +81,12 @@ namespace SFA.DAS.Payments.DataLocks.Application.Services
                     return;
                 }
 
-                var ageAtStartDate = CalculateAgeAt(learningStartDate, learnerDateOfBirth);
+                var ageAtStartDate = learningStartDate.Year - learnerDateOfBirth.Year;
+                if (learningStartDate.Date < learnerDateOfBirth.Date.AddYears(ageAtStartDate))
+                {
+                    ageAtStartDate--;
+                }
+
                 if (ageAtStartDate >= LearnerAgeThreshold)
                 {
                     logger.LogInfo($"Hiring payment not eligible for apprenticeship {createdEvent.ApprenticeshipId} because the learner is age {ageAtStartDate} at learning start date.");
@@ -98,11 +106,11 @@ namespace SFA.DAS.Payments.DataLocks.Application.Services
                 var employmentVerificationModel = new ApprenticeshipEmploymentVerificationModel
                 {
                     ApprenticeshipId = apprenticeshipId,
-                    PreEmploymentStatus = (byte)EmploymentCheckResult.Pending,
+                    PreEmploymentStatus = (byte)EmploymentValidationStatus.Pending,
                     PreEmploymentCorrelationId = correlationId,
-                    FirstHiringGrantStatus = (byte)EmploymentCheckResult.NotChecked,
+                    FirstHiringGrantStatus = (byte)EmploymentValidationStatus.NotChecked,
                     FirstHiringGrantCorrelationId = null,
-                    SecondHiringGrantStatus = (byte)EmploymentCheckResult.NotChecked,
+                    SecondHiringGrantStatus = (byte)EmploymentValidationStatus.NotChecked,
                     SecondHiringGrantCorrelationId = null,
                     CreationDate = DateTime.UtcNow,
                     UpdateDate = DateTime.UtcNow
@@ -116,7 +124,7 @@ namespace SFA.DAS.Payments.DataLocks.Application.Services
                     ULN = uln,
                     EmployerAccountIdentifier = accountId,
                     StartDate = employmentStartDate,
-                    Reference = string.Empty,
+                    Reference = $"Apprenticeship Hiring Payment Eligibility Check - ApprenticeshipId:{apprenticeshipId}",
                     DurationInDays = PreEmploymentCheckDurationDays
                 };
                 var endpointInstance = await endpointInstanceFactory.GetEndpointInstance().ConfigureAwait(false);
@@ -131,15 +139,38 @@ namespace SFA.DAS.Payments.DataLocks.Application.Services
             }
         }
 
-        private static int CalculateAgeAt(DateTime learningStartDate, DateTime dateOfBirth)
+        public async Task ProcessCompleted(VerifyNotEmployedCompleted completedMessage)
         {
-            var age = learningStartDate.Year - dateOfBirth.Year;
-            if (learningStartDate.Date < dateOfBirth.Date.AddYears(age))
+            try
             {
-                age--;
-            }
+                if (completedMessage == null)
+                {
+                    throw new ArgumentNullException(nameof(completedMessage));
+                }
 
-            return age;
+                logger.LogDebug($"Processing VerifyNotEmployedCompleted for Apprenticeship id: {completedMessage.ApprenticeshipId}, CorrelationId: {completedMessage.CorrelationId}.");
+
+                var status = completedMessage.NotEmployed
+                    ? EmploymentValidationStatus.NotEmployed
+                    : EmploymentValidationStatus.Employed;
+
+                var updated = await employmentVerificationService
+                    .SetPreEmploymentStatus(completedMessage.CorrelationId, completedMessage.ApprenticeshipId.Value, status)
+                    .ConfigureAwait(false);
+
+                if (!updated)
+                {
+                    logger.LogWarning($"Unable to find an employment verification record for Apprenticeship id: {completedMessage.ApprenticeshipId} and CorrelationId: {completedMessage.CorrelationId}.");
+                    return;
+                }
+
+                logger.LogInfo($"Employment verification completed for apprenticeship {completedMessage.ApprenticeshipId}. Status updated to {status}.");
+            }
+            catch (Exception ex)
+            {
+                logger.LogError($"Error processing VerifyNotEmployedCompleted for Apprenticeship id: {completedMessage?.ApprenticeshipId}. Error: {ex.Message}", ex);
+                throw;
+            }
         }
     }
 }

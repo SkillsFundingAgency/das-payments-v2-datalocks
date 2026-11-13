@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using Autofac;
 using NServiceBus;
+using SFA.DAS.EmploymentVerificationService.Messages.Learner.Events;
 using SFA.DAS.Payments.Application.Infrastructure.Ioc;
 using SFA.DAS.Payments.Application.Infrastructure.Logging;
 using SFA.DAS.Payments.Application.Infrastructure.Telemetry;
@@ -20,8 +21,8 @@ namespace SFA.DAS.Payments.DataLocks.ApprovalsService.Handlers
         {
             Logger.LogDebug($"Handling VerifyNotEmployedCompleted for Apprenticeship Id: {message.ApprenticeshipId}, CorrelationId: {message.CorrelationId}.");
 
-            var processor = scope.Resolve<IApprenticeshipEmploymentVerificationProcessor>();
-            await processor.Process(message);
+            var processor = scope.Resolve<IApprenticeshipHiringPaymentProcessor>();
+            await processor.ProcessCompleted(message);
 
             Logger.LogInfo($"Finished handling VerifyNotEmployedCompleted for Apprenticeship Id: {message.ApprenticeshipId}, CorrelationId: {message.CorrelationId}.");
         }

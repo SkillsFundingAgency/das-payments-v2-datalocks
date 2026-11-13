@@ -63,10 +63,10 @@ namespace SFA.DAS.Payments.DataLocks.Domain.UnitTests.Services
             repository.Verify(x => x.Add(model), Times.Once);
         }
 
-        [TestCase(EmploymentCheckResult.NotEmployed, true)]
-        [TestCase(EmploymentCheckResult.Employed, false)]
+        [TestCase(EmploymentValidationStatus.NotEmployed, true)]
+        [TestCase(EmploymentValidationStatus.Employed, false)]
         public async Task SetPreEmploymentStatus_DelegatesToRepository(
-            EmploymentCheckResult status,
+            EmploymentValidationStatus status,
             bool expectedResult)
         {
             var correlationId = Guid.NewGuid();

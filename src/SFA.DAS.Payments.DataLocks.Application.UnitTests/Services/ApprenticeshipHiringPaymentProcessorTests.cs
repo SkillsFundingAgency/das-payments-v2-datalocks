@@ -1,18 +1,20 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-using AutoMapper;
+﻿using AutoMapper;
 using FluentAssertions;
 using Moq;
 using NServiceBus;
 using NUnit.Framework;
 using SFA.DAS.CommitmentsV2.Messages.Events;
+using SFA.DAS.EmploymentVerificationService.Messages.Learner.Commands;
+using SFA.DAS.EmploymentVerificationService.Messages.Learner.Events;
 using SFA.DAS.Payments.Application.Infrastructure.Logging;
 using SFA.DAS.Payments.Application.Messaging;
 using SFA.DAS.Payments.DataLocks.Application.Services;
 using SFA.DAS.Payments.DataLocks.Domain.Services.Apprenticeships;
 using SFA.DAS.Payments.DataLocks.Messages.Events;
-using SFA.DAS.Payments.Model.Core.Entities; 
+using SFA.DAS.Payments.Model.Core.Entities;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace SFA.DAS.Payments.DataLocks.Application.UnitTests.Services
 {
@@ -165,10 +167,10 @@ namespace SFA.DAS.Payments.DataLocks.Application.UnitTests.Services
 
             pendingModel.Should().NotBeNull();
             pendingModel.ApprenticeshipId.Should().Be(123);
-            pendingModel.PreEmploymentStatus.Should().Be((byte)EmploymentCheckResult.Pending);
+            pendingModel.PreEmploymentStatus.Should().Be((byte)EmploymentValidationStatus.Pending);
             pendingModel.PreEmploymentCorrelationId.Should().NotBeEmpty();
-            pendingModel.FirstHiringGrantStatus.Should().Be((byte)EmploymentCheckResult.NotChecked);
-            pendingModel.SecondHiringGrantStatus.Should().Be((byte)EmploymentCheckResult.NotChecked);
+            pendingModel.FirstHiringGrantStatus.Should().Be((byte)EmploymentValidationStatus.NotChecked);
+            pendingModel.SecondHiringGrantStatus.Should().Be((byte)EmploymentValidationStatus.NotChecked);
 
             publishedMessage.Should().NotBeNull();
             publishedMessage.CorrelationId.Should().Be(pendingModel.PreEmploymentCorrelationId.ToString());
@@ -199,6 +201,99 @@ namespace SFA.DAS.Payments.DataLocks.Application.UnitTests.Services
             publishedMessage.Should().NotBeNull();
             publishedMessage.StartDate.Should().Be(new DateTime(2026, 5, 5));
             publishedMessage.DurationInDays.Should().Be(60);
+        }
+
+        [TestCase(true, EmploymentValidationStatus.NotEmployed)]
+        [TestCase(false, EmploymentValidationStatus.Employed)]
+        public async Task Process_UpdatesStatusFromCompletionMessage(
+            bool notEmployed,
+            EmploymentValidationStatus expectedStatus)
+        {
+            var correlationId = Guid.NewGuid();
+
+            employmentVerificationService
+                .Setup(service => service.SetPreEmploymentStatus(correlationId, 123, expectedStatus))
+                .ReturnsAsync(true);
+
+            await CreateSut().ProcessCompleted(new VerifyNotEmployedCompleted
+            {
+                CorrelationId = correlationId,
+                ApprenticeshipId = 123,
+                NotEmployed = notEmployed
+            });
+
+            employmentVerificationService.Verify(
+                service => service.SetPreEmploymentStatus(correlationId, 123, expectedStatus),
+                Times.Once);
+        }
+
+        [Test]
+        public async Task Process_WhenRecordIsNotFound_CompletesWithoutRetrying()
+        {
+            var correlationId = Guid.NewGuid();
+
+            employmentVerificationService
+                .Setup(service => service.SetPreEmploymentStatus(
+                    correlationId,
+                    123,
+                    EmploymentValidationStatus.NotEmployed))
+                .ReturnsAsync(false);
+
+            Func<Task> action = () => CreateSut().ProcessCompleted(new VerifyNotEmployedCompleted
+            {
+                CorrelationId = correlationId,
+                ApprenticeshipId = 123,
+                NotEmployed = true
+            });
+
+            await action.Should().NotThrowAsync();
+
+            employmentVerificationService.Verify(
+                service => service.SetPreEmploymentStatus(
+                    correlationId,
+                    123,
+                    EmploymentValidationStatus.NotEmployed),
+                Times.Once);
+        }
+
+        [Test]
+        public async Task Process_WithNullMessage_ThrowsArgumentNullException()
+        {
+            Func<Task> action = () => CreateSut().Process(null);
+
+            await action.Should().ThrowAsync<ArgumentNullException>();
+        }
+
+        [Test]
+        public async Task ProcessCompleted_WithNullMessage_ThrowsArgumentNullException()
+        {
+            Func<Task> action = () => CreateSut().ProcessCompleted(null);
+
+            await action.Should().ThrowAsync<ArgumentNullException>();
+        }
+
+        [Test]
+        public async Task Process_WhenServiceThrows_RethrowsTheException()
+        {
+            var correlationId = Guid.NewGuid();
+            var expectedException = new InvalidOperationException("Service failure");
+
+            employmentVerificationService
+                .Setup(service => service.SetPreEmploymentStatus(
+                    correlationId,
+                    123,
+                    EmploymentValidationStatus.Employed))
+                .ThrowsAsync(expectedException);
+
+            Func<Task> action = () => CreateSut().ProcessCompleted(new VerifyNotEmployedCompleted
+            {
+                CorrelationId = correlationId,
+                ApprenticeshipId = 123,
+                NotEmployed = false
+            });
+
+            var exception = await action.Should().ThrowAsync<InvalidOperationException>();
+            exception.Which.Message.Should().Be("Service failure");
         }
 
         private ApprenticeshipHiringPaymentProcessor CreateSut()

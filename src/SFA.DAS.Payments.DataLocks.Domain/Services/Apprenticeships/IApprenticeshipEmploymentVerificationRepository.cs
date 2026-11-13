@@ -9,6 +9,6 @@ namespace SFA.DAS.Payments.DataLocks.Domain.Services.Apprenticeships
     {
         Task<ApprenticeshipEmploymentVerificationModel> GetByCorrelationIdAndApprenticeshipId(Guid correlationId, long apprenticeshipId);
         Task Add(ApprenticeshipEmploymentVerificationModel request);
-        Task<bool> SetPreEmploymentStatus(Guid correlationId, long apprenticeshipId, EmploymentCheckResult status);
+        Task<bool> SetPreEmploymentStatus(Guid correlationId, long apprenticeshipId, EmploymentValidationStatus status);
     }
 }
