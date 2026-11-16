@@ -19,6 +19,7 @@ namespace SFA.DAS.Payments.DataLocks.Application.Services
     {
         Task Process(ApprenticeshipCreatedEvent createdEvent);
         Task ProcessCompleted(VerifyNotEmployedCompleted completedMessage);
+        Task ProcessFailed(VerifyNotEmployedFailed failedMessage);
     }
 
     public class ApprenticeshipHiringPaymentProcessor : IApprenticeshipHiringPaymentProcessor
@@ -169,6 +170,38 @@ namespace SFA.DAS.Payments.DataLocks.Application.Services
             catch (Exception ex)
             {
                 logger.LogError($"Error processing VerifyNotEmployedCompleted for Apprenticeship id: {completedMessage?.ApprenticeshipId}. Error: {ex.Message}", ex);
+                throw;
+            }
+        }
+
+        public async Task ProcessFailed(VerifyNotEmployedFailed failedMessage)
+        {
+            try
+            {
+                if (failedMessage == null)
+                {
+                    throw new ArgumentNullException(nameof(failedMessage));
+                }
+
+                logger.LogDebug($"Processing VerifyNotEmployedFailed for Apprenticeship id: {failedMessage.ApprenticeshipId}, CorrelationId: {failedMessage.CorrelationId}.");
+
+                var status = EmploymentValidationStatus.Failed;
+
+                var updated = await employmentVerificationService
+                    .SetPreEmploymentStatus(failedMessage.CorrelationId, failedMessage.ApprenticeshipId.Value, status)
+                    .ConfigureAwait(false);
+
+                if (!updated)
+                {
+                    logger.LogWarning($"Unable to find an employment verification record for Apprenticeship id: {failedMessage.ApprenticeshipId} and CorrelationId: {failedMessage.CorrelationId}.");
+                    return;
+                }
+
+                logger.LogInfo($"Employment verification failed for apprenticeship {failedMessage.ApprenticeshipId}. FailureId {failedMessage.FailureId}, FailureReason - {failedMessage.FailureReason}.");
+            }
+            catch (Exception ex)
+            {
+                logger.LogError($"Error processing VerifyNotEmployedFailed for Apprenticeship id: {failedMessage?.ApprenticeshipId}. Error: {ex.Message}", ex);
                 throw;
             }
         }

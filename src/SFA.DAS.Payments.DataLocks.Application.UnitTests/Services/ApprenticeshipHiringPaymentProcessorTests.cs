@@ -296,6 +296,32 @@ namespace SFA.DAS.Payments.DataLocks.Application.UnitTests.Services
             exception.Which.Message.Should().Be("Service failure");
         }
 
+        [Test]
+        public async Task ProcessFailed_UpdatesStatusToFailed()
+        {
+            var correlationId = Guid.NewGuid();
+
+            employmentVerificationService
+                .Setup(service => service.SetPreEmploymentStatus(
+                    correlationId,
+                    123,
+                    EmploymentValidationStatus.Failed))
+                .ReturnsAsync(true);
+
+            await CreateSut().ProcessFailed(new VerifyNotEmployedFailed
+            {
+                CorrelationId = correlationId,
+                ApprenticeshipId = 123
+            });
+
+            employmentVerificationService.Verify(
+                service => service.SetPreEmploymentStatus(
+                    correlationId,
+                    123,
+                    EmploymentValidationStatus.Failed),
+                Times.Once);
+        }
+
         private ApprenticeshipHiringPaymentProcessor CreateSut()
         {
             return new ApprenticeshipHiringPaymentProcessor(
