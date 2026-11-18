@@ -12,6 +12,9 @@ using SFA.DAS.Payments.Application.Infrastructure.Telemetry;
 using SFA.DAS.Payments.Application.Messaging;
 using SFA.DAS.Payments.Core.Configuration;
 using SFA.DAS.Payments.ServiceFabric.Core;
+using SFA.DAS.Payments.DataLocks.Messages.Events;
+using SFA.DAS.EmploymentVerificationService.Messages.Learner.Commands;
+using SFA.DAS.EmploymentVerificationService.Messages.Learner.Events;
 
 namespace SFA.DAS.Payments.DataLocks.ApprovalsService.Infrastructure
 {
@@ -85,7 +88,10 @@ namespace SFA.DAS.Payments.DataLocks.ApprovalsService.Infrastructure
                     t.IsAssignableTo<ApprenticeshipStopDateChangedEvent>() ||
                     t.IsAssignableTo<ApprenticeshipPausedEvent>() ||
                     t.IsAssignableTo<ApprenticeshipResumedEvent>() ||
-                    t.IsAssignableTo<PaymentOrderChangedEvent>()
+                    t.IsAssignableTo<PaymentOrderChangedEvent>() ||
+                    t.IsAssignableTo<VerifyNotEmployed>() ||
+                    t.IsAssignableTo<VerifyNotEmployedCompleted>() ||
+                    t.IsAssignableTo<VerifyNotEmployedFailed>()
                 )
                 .DefiningEventsAs(t =>
                     t.IsAssignableTo<ApprenticeshipCreatedEvent>() ||
@@ -95,9 +101,12 @@ namespace SFA.DAS.Payments.DataLocks.ApprovalsService.Infrastructure
                     t.IsAssignableTo<ApprenticeshipStopDateChangedEvent>() ||
                     t.IsAssignableTo<ApprenticeshipPausedEvent>() ||
                     t.IsAssignableTo<ApprenticeshipResumedEvent>() ||
-                    t.IsAssignableTo<PaymentOrderChangedEvent>()
+                    t.IsAssignableTo<PaymentOrderChangedEvent>() ||
+                    t.IsAssignableTo<VerifyNotEmployed>() ||
+                    t.IsAssignableTo<VerifyNotEmployedCompleted>() ||
+                    t.IsAssignableTo<VerifyNotEmployedFailed>()
                 );
-                
+
             //var persistence = endpointConfiguration.UsePersistence<AzureStoragePersistence>();
             //persistence.ConnectionString(config.StorageConnectionString);
 
@@ -106,7 +115,7 @@ namespace SFA.DAS.Payments.DataLocks.ApprovalsService.Infrastructure
             transport
                 .ConnectionString(configHelper.GetConnectionString("DASServiceBusConnectionString"))
                 .Transactions(TransportTransactionMode.ReceiveOnly)
-                    //                .RuleNameShortener(ruleName => ruleName.Split('.').LastOrDefault() ?? ruleName);
+                //                .RuleNameShortener(ruleName => ruleName.Split('.').LastOrDefault() ?? ruleName);
                 .SubscriptionRuleNamingConvention(messageType =>
                     messageType.FullName?.Split('.').LastOrDefault() ?? messageType.Name);
             endpointConfiguration.SendFailedMessagesTo(config.FailedMessagesQueue);
@@ -120,7 +129,7 @@ namespace SFA.DAS.Payments.DataLocks.ApprovalsService.Infrastructure
             endpointConfiguration.RegisterComponents(cfg => cfg.RegisterSingleton((ITelemetry)telemetry));
             endpointConfiguration.RegisterComponents(cfg => cfg.RegisterSingleton(lifetimeScope.Resolve<IContainerScopeFactory>()));
             endpointConfiguration.RegisterComponents(cfg => cfg.RegisterSingleton(lifetimeScope.Resolve<IEndpointInstanceFactory>()));
-            
+
             return endpointConfiguration;
         }
     }
