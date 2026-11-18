@@ -297,6 +297,66 @@ namespace SFA.DAS.Payments.DataLocks.Application.UnitTests.Services
         }
 
         [Test]
+        public async Task ProcessFailed_WithNullMessage_ThrowsArgumentNullException()
+        {
+            Func<Task> action = () => CreateSut().ProcessFailed(null);
+
+            await action.Should().ThrowAsync<ArgumentNullException>();
+        }
+
+        [Test]
+        public async Task ProcessFailed_WhenRecordIsNotFound_CompletesWithoutRetrying()
+        {
+            var correlationId = Guid.NewGuid();
+
+            employmentVerificationService
+                .Setup(service => service.SetPreEmploymentStatus(
+                    correlationId,
+                    123,
+                    EmploymentValidationStatus.Failed))
+                .ReturnsAsync(false);
+
+            Func<Task> action = () => CreateSut().ProcessFailed(new VerifyNotEmployedFailed
+            {
+                CorrelationId = correlationId,
+                ApprenticeshipId = 123
+            });
+
+            await action.Should().NotThrowAsync();
+
+            employmentVerificationService.Verify(
+                service => service.SetPreEmploymentStatus(
+                    correlationId,
+                    123,
+                    EmploymentValidationStatus.Failed),
+                Times.Once);
+        }
+
+        [Test]
+        public async Task ProcessFailed_WhenServiceThrows_RethrowsTheException()
+        {
+            var correlationId = Guid.NewGuid();
+            var expectedException = new InvalidOperationException("Service failure");
+
+            employmentVerificationService
+                .Setup(service => service.SetPreEmploymentStatus(
+                    correlationId,
+                    123,
+                    EmploymentValidationStatus.Failed))
+                .ThrowsAsync(expectedException);
+
+            Func<Task> action = () => CreateSut().ProcessFailed(new VerifyNotEmployedFailed
+            {
+                CorrelationId = correlationId,
+                ApprenticeshipId = 123
+            });
+
+            var exception = await action.Should().ThrowAsync<InvalidOperationException>();
+
+            exception.Which.Message.Should().Be("Service failure");
+        }
+
+        [Test]
         public async Task ProcessFailed_UpdatesStatusToFailed()
         {
             var correlationId = Guid.NewGuid();
