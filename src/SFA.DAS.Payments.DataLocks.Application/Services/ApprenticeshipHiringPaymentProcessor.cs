@@ -1,17 +1,18 @@
-using System;
-using System.Globalization;
-using System.Reflection;
-using System.Threading.Tasks;
 using AutoMapper;
-using NServiceBus;
 using SFA.DAS.CommitmentsV2.Messages.Events;
 using SFA.DAS.EmploymentVerificationService.Messages.Learner.Commands;
 using SFA.DAS.EmploymentVerificationService.Messages.Learner.Events;
 using SFA.DAS.Payments.Application.Infrastructure.Logging;
 using SFA.DAS.Payments.Application.Messaging;
+using SFA.DAS.Payments.DataLocks.Application.Infrastructure.Messaging;
 using SFA.DAS.Payments.DataLocks.Domain.Services.Apprenticeships;
 using SFA.DAS.Payments.DataLocks.Messages.Events;
 using SFA.DAS.Payments.Model.Core.Entities;
+using System;
+using System.Globalization;
+using System.Reflection;
+using System.Threading.Tasks;
+using UUIDNext;
 
 namespace SFA.DAS.Payments.DataLocks.Application.Services
 {
@@ -25,7 +26,7 @@ namespace SFA.DAS.Payments.DataLocks.Application.Services
     {
         private readonly IPaymentLogger logger;
         private readonly IMapper mapper;
-        private readonly IEndpointInstanceFactory endpointInstanceFactory;
+        private readonly IEmploymentVerificationRequestService employmentVerificationRequestService;
         private readonly IApprenticeshipEmploymentVerificationService employmentVerificationService;
 
         private const int LearnerAgeThreshold = 25;
@@ -38,13 +39,15 @@ namespace SFA.DAS.Payments.DataLocks.Application.Services
         public ApprenticeshipHiringPaymentProcessor(
             IPaymentLogger logger,
             IMapper mapper,
-            IEndpointInstanceFactory endpointInstanceFactory,
+            IEmploymentVerificationRequestService employmentVerificationRequestService,
             IApprenticeshipEmploymentVerificationService employmentVerificationService)
         {
             this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
             this.mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-            this.endpointInstanceFactory = endpointInstanceFactory ?? throw new ArgumentNullException(nameof(endpointInstanceFactory));
-            this.employmentVerificationService = employmentVerificationService ?? throw new ArgumentNullException(nameof(employmentVerificationService));
+            this.employmentVerificationRequestService = employmentVerificationRequestService
+                ?? throw new ArgumentNullException(nameof(employmentVerificationRequestService));
+            this.employmentVerificationService = employmentVerificationService
+                ?? throw new ArgumentNullException(nameof(employmentVerificationService));
         }
 
         public async Task Process(ApprenticeshipCreatedEvent createdEvent)
@@ -81,12 +84,7 @@ namespace SFA.DAS.Payments.DataLocks.Application.Services
                     return;
                 }
 
-                var ageAtStartDate = learningStartDate.Year - learnerDateOfBirth.Year;
-                if (learningStartDate.Date < learnerDateOfBirth.Date.AddYears(ageAtStartDate))
-                {
-                    ageAtStartDate--;
-                }
-
+                var ageAtStartDate = learnerDateOfBirth.GetAgeAt(learningStartDate);
                 if (ageAtStartDate >= LearnerAgeThreshold)
                 {
                     logger.LogInfo($"Hiring payment not eligible for apprenticeship {createdEvent.ApprenticeshipId} because the learner is age {ageAtStartDate} at learning start date.");
@@ -97,8 +95,7 @@ namespace SFA.DAS.Payments.DataLocks.Application.Services
                     ? SpecialCaseEmploymentCheckStartDate
                     : learningStartDate.Date.AddDays(-MaximumPreEmploymentDays);
 
-
-                var correlationId = Guid.NewGuid();
+                var correlationId = Uuid.NewDatabaseFriendly(Database.SqlServer);
                 var apprenticeshipId = createdEvent.ApprenticeshipId;
                 var uln = model.Uln;
                 var accountId = createdEvent.AccountId;
@@ -115,20 +112,18 @@ namespace SFA.DAS.Payments.DataLocks.Application.Services
                     CreationDate = DateTime.UtcNow,
                     UpdateDate = DateTime.UtcNow
                 };
-                await employmentVerificationService.CreatePending(employmentVerificationModel).ConfigureAwait(false);
 
-                var verifyNotEmployedMessage = new VerifyNotEmployed
-                {
-                    CorrelationId = correlationId,
-                    ApprenticeshipId = apprenticeshipId,
-                    ULN = uln,
-                    EmployerAccountIdentifier = accountId,
-                    StartDate = employmentStartDate,
-                    Reference = $"Apprenticeship Hiring Payment Eligibility Check - ApprenticeshipId:{apprenticeshipId}",
-                    DurationInDays = PreEmploymentCheckDurationDays
-                };
-                var endpointInstance = await endpointInstanceFactory.GetEndpointInstance().ConfigureAwait(false);
-                await endpointInstance.Publish(verifyNotEmployedMessage, new PublishOptions()).ConfigureAwait(false);
+                await employmentVerificationService.Save(employmentVerificationModel).ConfigureAwait(false);
+
+                await employmentVerificationRequestService
+                    .PublishVerifyNotEmployed(
+                        correlationId,
+                        apprenticeshipId,
+                        uln,
+                        accountId,
+                        employmentStartDate,
+                        PreEmploymentCheckDurationDays)
+                    .ConfigureAwait(false);
 
                 logger.LogInfo($"Published VerifyNotEmployed message for apprenticeship {createdEvent.ApprenticeshipId}. Employment check start date: {employmentStartDate:yyyy-MM-dd}.");
             }

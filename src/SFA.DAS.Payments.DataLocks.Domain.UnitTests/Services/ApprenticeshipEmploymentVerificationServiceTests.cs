@@ -58,7 +58,7 @@ namespace SFA.DAS.Payments.DataLocks.Domain.UnitTests.Services
                 .Setup(x => x.Add(model))
                 .Returns(Task.CompletedTask);
 
-            await sut.CreatePending(model);
+            await sut.Save(model);
 
             repository.Verify(x => x.Add(model), Times.Once);
         }

@@ -8,7 +8,7 @@ namespace SFA.DAS.Payments.DataLocks.Domain.Services.Apprenticeships
     public interface IApprenticeshipEmploymentVerificationService
     {
         Task<ApprenticeshipEmploymentVerificationModel> GetByCorrelationIdAndApprenticeshipId(Guid correlationId, long apprenticeshipId);
-        Task CreatePending(ApprenticeshipEmploymentVerificationModel model);
+        Task Save(ApprenticeshipEmploymentVerificationModel model);
         Task<bool> SetPreEmploymentStatus(Guid correlationId, long apprenticeshipId, EmploymentValidationStatus status);
     }
 
@@ -26,7 +26,7 @@ namespace SFA.DAS.Payments.DataLocks.Domain.Services.Apprenticeships
             this.repository = repository ?? throw new ArgumentNullException(nameof(repository));
         }
 
-        public async Task CreatePending(ApprenticeshipEmploymentVerificationModel model)
+        public async Task Save(ApprenticeshipEmploymentVerificationModel model)
         {
             await repository.Add(model).ConfigureAwait(false);
         }

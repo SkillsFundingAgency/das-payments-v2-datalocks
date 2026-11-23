@@ -1,20 +1,17 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Threading.Tasks;
+using AutoMapper;
 using FluentAssertions;
 using Moq;
-using NServiceBus;
 using NUnit.Framework;
 using SFA.DAS.CommitmentsV2.Messages.Events;
-using SFA.DAS.EmploymentVerificationService.Messages.Learner.Commands;
 using SFA.DAS.EmploymentVerificationService.Messages.Learner.Events;
 using SFA.DAS.Payments.Application.Infrastructure.Logging;
-using SFA.DAS.Payments.Application.Messaging;
+using SFA.DAS.Payments.DataLocks.Application.Infrastructure.Messaging;
 using SFA.DAS.Payments.DataLocks.Application.Services;
 using SFA.DAS.Payments.DataLocks.Domain.Services.Apprenticeships;
 using SFA.DAS.Payments.DataLocks.Messages.Events;
 using SFA.DAS.Payments.Model.Core.Entities;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace SFA.DAS.Payments.DataLocks.Application.UnitTests.Services
 {
@@ -23,32 +20,29 @@ namespace SFA.DAS.Payments.DataLocks.Application.UnitTests.Services
     {
         private Mock<IPaymentLogger> logger;
         private Mock<IMapper> mapper;
-        private Mock<IEndpointInstanceFactory> endpointInstanceFactory;
-        private Mock<IEndpointInstance> endpointInstance;
         private Mock<IApprenticeshipEmploymentVerificationService> employmentVerificationService;
+        private Mock<IEmploymentVerificationRequestService> employmentVerificationRequestService;
 
         [SetUp]
         public void SetUp()
         {
             logger = new Mock<IPaymentLogger>();
             mapper = new Mock<IMapper>();
-            endpointInstanceFactory = new Mock<IEndpointInstanceFactory>();
-            endpointInstance = new Mock<IEndpointInstance>();
             employmentVerificationService = new Mock<IApprenticeshipEmploymentVerificationService>();
-
-            endpointInstanceFactory
-                .Setup(factory => factory.GetEndpointInstance())
-                .ReturnsAsync(endpointInstance.Object);
-
-            endpointInstance
-                .Setup(instance => instance.Publish(
-                    It.IsAny<object>(),
-                    It.IsAny<PublishOptions>(),
-                    CancellationToken.None))
-                .Returns(Task.CompletedTask);
+            employmentVerificationRequestService = new Mock<IEmploymentVerificationRequestService>();
 
             employmentVerificationService
-                .Setup(service => service.CreatePending(It.IsAny<ApprenticeshipEmploymentVerificationModel>()))
+                .Setup(service => service.Save(It.IsAny<ApprenticeshipEmploymentVerificationModel>()))
+                .Returns(Task.CompletedTask);
+
+            employmentVerificationRequestService
+                .Setup(service => service.PublishVerifyNotEmployed(
+                    It.IsAny<Guid>(),
+                    It.IsAny<long>(),
+                    It.IsAny<long>(),
+                    It.IsAny<long>(),
+                    It.IsAny<DateTime>(),
+                    It.IsAny<int>()))
                 .Returns(Task.CompletedTask);
 
             SetupMappedModel(isLevyPayer: false);
@@ -71,15 +65,10 @@ namespace SFA.DAS.Payments.DataLocks.Application.UnitTests.Services
                 CreateEvent(new DateTime(2026, 10, 1), new DateTime(2001, 10, 2)));
 
             employmentVerificationService.Verify(
-                service => service.CreatePending(It.IsAny<ApprenticeshipEmploymentVerificationModel>()),
+                service => service.Save(It.IsAny<ApprenticeshipEmploymentVerificationModel>()),
                 Times.Never);
 
-            endpointInstance.Verify(
-                instance => instance.Publish(
-                    It.IsAny<object>(),
-                    It.IsAny<PublishOptions>(),
-                    CancellationToken.None),
-                Times.Never);
+            VerifyNoVerificationRequestPublished();
         }
 
         [TestCase(true, false)]
@@ -95,15 +84,10 @@ namespace SFA.DAS.Payments.DataLocks.Application.UnitTests.Services
             await CreateSut().Process(createdEvent);
 
             employmentVerificationService.Verify(
-                service => service.CreatePending(It.IsAny<ApprenticeshipEmploymentVerificationModel>()),
+                service => service.Save(It.IsAny<ApprenticeshipEmploymentVerificationModel>()),
                 Times.Never);
 
-            endpointInstance.Verify(
-                instance => instance.Publish(
-                    It.IsAny<object>(),
-                    It.IsAny<PublishOptions>(),
-                    CancellationToken.None),
-                Times.Never);
+            VerifyNoVerificationRequestPublished();
         }
 
         [Test]
@@ -113,15 +97,10 @@ namespace SFA.DAS.Payments.DataLocks.Application.UnitTests.Services
                 CreateEvent(new DateTime(2026, 9, 30), new DateTime(2001, 10, 2)));
 
             employmentVerificationService.Verify(
-                service => service.CreatePending(It.IsAny<ApprenticeshipEmploymentVerificationModel>()),
+                service => service.Save(It.IsAny<ApprenticeshipEmploymentVerificationModel>()),
                 Times.Never);
 
-            endpointInstance.Verify(
-                instance => instance.Publish(
-                    It.IsAny<object>(),
-                    It.IsAny<PublishOptions>(),
-                    CancellationToken.None),
-                Times.Never);
+            VerifyNoVerificationRequestPublished();
         }
 
         [Test]
@@ -131,35 +110,20 @@ namespace SFA.DAS.Payments.DataLocks.Application.UnitTests.Services
                 CreateEvent(new DateTime(2026, 10, 1), new DateTime(2001, 10, 1)));
 
             employmentVerificationService.Verify(
-                service => service.CreatePending(It.IsAny<ApprenticeshipEmploymentVerificationModel>()),
+                service => service.Save(It.IsAny<ApprenticeshipEmploymentVerificationModel>()),
                 Times.Never);
 
-            endpointInstance.Verify(
-                instance => instance.Publish(
-                    It.IsAny<object>(),
-                    It.IsAny<PublishOptions>(),
-                    CancellationToken.None),
-                Times.Never);
+            VerifyNoVerificationRequestPublished();
         }
 
         [Test]
-        public async Task Process_ForOctober1_CreatesPendingRecordAndPublishesVerification()
+        public async Task Process_ForOctober1_CreatesPendingRecordAndRequestsVerification()
         {
             ApprenticeshipEmploymentVerificationModel pendingModel = null;
-            VerifyNotEmployed publishedMessage = null;
 
             employmentVerificationService
-                .Setup(service => service.CreatePending(It.IsAny<ApprenticeshipEmploymentVerificationModel>()))
+                .Setup(service => service.Save(It.IsAny<ApprenticeshipEmploymentVerificationModel>()))
                 .Callback<ApprenticeshipEmploymentVerificationModel>(model => pendingModel = model)
-                .Returns(Task.CompletedTask);
-
-            endpointInstance
-                .Setup(instance => instance.Publish(
-                    It.IsAny<object>(),
-                    It.IsAny<PublishOptions>(),
-                    CancellationToken.None))
-                .Callback<object, PublishOptions, CancellationToken>(
-                    (message, _, _) => publishedMessage = (VerifyNotEmployed)message)
                 .Returns(Task.CompletedTask);
 
             await CreateSut().Process(
@@ -172,35 +136,32 @@ namespace SFA.DAS.Payments.DataLocks.Application.UnitTests.Services
             pendingModel.FirstHiringGrantStatus.Should().Be((byte)EmploymentValidationStatus.NotChecked);
             pendingModel.SecondHiringGrantStatus.Should().Be((byte)EmploymentValidationStatus.NotChecked);
 
-            publishedMessage.Should().NotBeNull();
-            publishedMessage.CorrelationId.Should().Be(pendingModel.PreEmploymentCorrelationId.ToString());
-            publishedMessage.ApprenticeshipId.Should().Be(123);
-            publishedMessage.ULN.Should().Be(456789);
-            publishedMessage.EmployerAccountIdentifier.Should().Be(987);
-            publishedMessage.StartDate.Should().Be(new DateTime(2026, 7, 1));
-            publishedMessage.DurationInDays.Should().Be(60);
+            employmentVerificationRequestService.Verify(
+                service => service.PublishVerifyNotEmployed(
+                    pendingModel.PreEmploymentCorrelationId.Value,
+                    123,
+                    456789,
+                    987,
+                    new DateTime(2026, 7, 1),
+                    60),
+                Times.Once);
         }
 
         [Test]
         public async Task Process_ForOtherEligibleStartDate_Uses150DayLookback()
         {
-            VerifyNotEmployed publishedMessage = null;
-
-            endpointInstance
-                .Setup(instance => instance.Publish(
-                    It.IsAny<object>(),
-                    It.IsAny<PublishOptions>(),
-                    CancellationToken.None))
-                .Callback<object, PublishOptions, CancellationToken>(
-                    (message, _, _) => publishedMessage = (VerifyNotEmployed)message)
-                .Returns(Task.CompletedTask);
-
             await CreateSut().Process(
                 CreateEvent(new DateTime(2026, 10, 2), new DateTime(2001, 10, 3)));
 
-            publishedMessage.Should().NotBeNull();
-            publishedMessage.StartDate.Should().Be(new DateTime(2026, 5, 5));
-            publishedMessage.DurationInDays.Should().Be(60);
+            employmentVerificationRequestService.Verify(
+                service => service.PublishVerifyNotEmployed(
+                    It.IsAny<Guid>(),
+                    123,
+                    456789,
+                    987,
+                    new DateTime(2026, 5, 5),
+                    60),
+                Times.Once);
         }
 
         [TestCase(true, EmploymentValidationStatus.NotEmployed)]
@@ -301,7 +262,7 @@ namespace SFA.DAS.Payments.DataLocks.Application.UnitTests.Services
             return new ApprenticeshipHiringPaymentProcessor(
                 logger.Object,
                 mapper.Object,
-                endpointInstanceFactory.Object,
+                employmentVerificationRequestService.Object,
                 employmentVerificationService.Object);
         }
 
@@ -325,6 +286,19 @@ namespace SFA.DAS.Payments.DataLocks.Application.UnitTests.Services
                 StartDate = startDate,
                 DateOfBirth = dateOfBirth
             };
+        }
+
+        private void VerifyNoVerificationRequestPublished()
+        {
+            employmentVerificationRequestService.Verify(
+                service => service.PublishVerifyNotEmployed(
+                    It.IsAny<Guid>(),
+                    It.IsAny<long>(),
+                    It.IsAny<long>(),
+                    It.IsAny<long>(),
+                    It.IsAny<DateTime>(),
+                    It.IsAny<int>()),
+                Times.Never);
         }
     }
 }

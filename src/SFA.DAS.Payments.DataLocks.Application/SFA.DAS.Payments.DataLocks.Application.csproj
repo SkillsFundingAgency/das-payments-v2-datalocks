@@ -12,6 +12,7 @@
     <PackageReference Include="SFA.DAS.Payments.EarningEvents.Messages" Version="2.0.15-prerelease-8" />
     <PackageReference Include="SFA.DAS.Payments.ServiceFabric.Core" Version="2.0.8" />
     <PackageReference Include="SFA.DAS.EmploymentVerificationService.Messages" Version="0.1.6-prerelease-61" />
+    <PackageReference Include="UUIDNext" Version="4.2.4" />
   </ItemGroup>
 
   <ItemGroup>
