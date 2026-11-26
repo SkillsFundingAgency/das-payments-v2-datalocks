@@ -5,6 +5,7 @@ using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using SFA.DAS.CommitmentsV2.Messages.Events;
+using SFA.DAS.EmploymentVerificationService.Messages.Learner.Commands;
 using SFA.DAS.EmploymentVerificationService.Messages.Learner.Events;
 using SFA.DAS.Payments.Application.Infrastructure.Logging;
 using SFA.DAS.Payments.DataLocks.Application.Infrastructure.Messaging;
@@ -21,7 +22,7 @@ namespace SFA.DAS.Payments.DataLocks.Application.UnitTests.Services
         private Mock<IPaymentLogger> logger;
         private Mock<IMapper> mapper;
         private Mock<IApprenticeshipEmploymentVerificationService> employmentVerificationService;
-        private Mock<IEmploymentVerificationRequestService> employmentVerificationRequestService;
+        private Mock<IEmploymentVerificationMessageSender> employmentVerificationRequestService;
 
         [SetUp]
         public void SetUp()
@@ -29,20 +30,14 @@ namespace SFA.DAS.Payments.DataLocks.Application.UnitTests.Services
             logger = new Mock<IPaymentLogger>();
             mapper = new Mock<IMapper>();
             employmentVerificationService = new Mock<IApprenticeshipEmploymentVerificationService>();
-            employmentVerificationRequestService = new Mock<IEmploymentVerificationRequestService>();
+            employmentVerificationRequestService = new Mock<IEmploymentVerificationMessageSender>();
 
             employmentVerificationService
                 .Setup(service => service.Save(It.IsAny<ApprenticeshipEmploymentVerificationModel>()))
                 .Returns(Task.CompletedTask);
 
             employmentVerificationRequestService
-                .Setup(service => service.PublishVerifyNotEmployed(
-                    It.IsAny<Guid>(),
-                    It.IsAny<long>(),
-                    It.IsAny<long>(),
-                    It.IsAny<long>(),
-                    It.IsAny<DateTime>(),
-                    It.IsAny<int>()))
+                .Setup(sender => sender.Send(It.IsAny<VerifyNotEmployed>()))
                 .Returns(Task.CompletedTask);
 
             SetupMappedModel(isLevyPayer: false);
@@ -59,10 +54,14 @@ namespace SFA.DAS.Payments.DataLocks.Application.UnitTests.Services
         [Test]
         public async Task Process_WithLevyPayer_DoesNotSaveOrPublish()
         {
-            SetupMappedModel(isLevyPayer: true);
+            var createdEvent = CreateEvent(
+                new DateTime(2026, 10, 1),
+                new DateTime(2001, 10, 2));
 
-            await CreateSut().Process(
-                CreateEvent(new DateTime(2026, 10, 1), new DateTime(2001, 10, 2)));
+            createdEvent.ApprenticeshipEmployerTypeOnApproval =
+                SFA.DAS.CommitmentsV2.Types.ApprenticeshipEmployerType.Levy;
+
+            await CreateSut().Process(createdEvent);
 
             employmentVerificationService.Verify(
                 service => service.Save(It.IsAny<ApprenticeshipEmploymentVerificationModel>()),
@@ -137,13 +136,14 @@ namespace SFA.DAS.Payments.DataLocks.Application.UnitTests.Services
             pendingModel.SecondHiringGrantStatus.Should().Be((byte)EmploymentValidationStatus.NotChecked);
 
             employmentVerificationRequestService.Verify(
-                service => service.PublishVerifyNotEmployed(
-                    pendingModel.PreEmploymentCorrelationId.Value,
-                    123,
-                    456789,
-                    987,
-                    new DateTime(2026, 7, 1),
-                    60),
+                sender => sender.Send(It.Is<VerifyNotEmployed>(message =>
+                    message.ApprenticeshipId == 123 &&
+                    message.ULN == 456789 &&
+                    message.EmployerAccountIdentifier == 987 &&
+                    message.StartDate == new DateTime(2026, 7, 1) &&
+                    message.DurationInDays == 60 &&
+                    message.Reference ==
+                        "Apprenticeship Hiring Payment Eligibility Check - ApprenticeshipId:123")),
                 Times.Once);
         }
 
@@ -154,13 +154,12 @@ namespace SFA.DAS.Payments.DataLocks.Application.UnitTests.Services
                 CreateEvent(new DateTime(2026, 10, 2), new DateTime(2001, 10, 3)));
 
             employmentVerificationRequestService.Verify(
-                service => service.PublishVerifyNotEmployed(
-                    It.IsAny<Guid>(),
-                    123,
-                    456789,
-                    987,
-                    new DateTime(2026, 5, 5),
-                    60),
+                sender => sender.Send(It.Is<VerifyNotEmployed>(message =>
+                    message.ApprenticeshipId == 123 &&
+                    message.ULN == 456789 &&
+                    message.EmployerAccountIdentifier == 987 &&
+                    message.StartDate == new DateTime(2026, 5, 5) &&
+                    message.DurationInDays == 60)),
                 Times.Once);
         }
 
@@ -283,6 +282,7 @@ namespace SFA.DAS.Payments.DataLocks.Application.UnitTests.Services
             {
                 AccountId = 987,
                 ApprenticeshipId = 123,
+                Uln = "456789",
                 StartDate = startDate,
                 DateOfBirth = dateOfBirth
             };
@@ -291,13 +291,7 @@ namespace SFA.DAS.Payments.DataLocks.Application.UnitTests.Services
         private void VerifyNoVerificationRequestPublished()
         {
             employmentVerificationRequestService.Verify(
-                service => service.PublishVerifyNotEmployed(
-                    It.IsAny<Guid>(),
-                    It.IsAny<long>(),
-                    It.IsAny<long>(),
-                    It.IsAny<long>(),
-                    It.IsAny<DateTime>(),
-                    It.IsAny<int>()),
+                sender => sender.Send(It.IsAny<VerifyNotEmployed>()),
                 Times.Never);
         }
     }

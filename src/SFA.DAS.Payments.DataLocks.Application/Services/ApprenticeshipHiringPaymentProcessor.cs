@@ -26,7 +26,7 @@ namespace SFA.DAS.Payments.DataLocks.Application.Services
     {
         private readonly IPaymentLogger logger;
         private readonly IMapper mapper;
-        private readonly IEmploymentVerificationRequestService employmentVerificationRequestService;
+        private readonly IEmploymentVerificationMessageSender employmentVerificationMessageSender;
         private readonly IApprenticeshipEmploymentVerificationService employmentVerificationService;
 
         private const int LearnerAgeThreshold = 25;
@@ -39,13 +39,13 @@ namespace SFA.DAS.Payments.DataLocks.Application.Services
         public ApprenticeshipHiringPaymentProcessor(
             IPaymentLogger logger,
             IMapper mapper,
-            IEmploymentVerificationRequestService employmentVerificationRequestService,
+            IEmploymentVerificationMessageSender employmentVerificationMessageSender,
             IApprenticeshipEmploymentVerificationService employmentVerificationService)
         {
             this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
             this.mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-            this.employmentVerificationRequestService = employmentVerificationRequestService
-                ?? throw new ArgumentNullException(nameof(employmentVerificationRequestService));
+            this.employmentVerificationMessageSender = employmentVerificationMessageSender
+                ?? throw new ArgumentNullException(nameof(employmentVerificationMessageSender));
             this.employmentVerificationService = employmentVerificationService
                 ?? throw new ArgumentNullException(nameof(employmentVerificationService));
         }
@@ -59,11 +59,9 @@ namespace SFA.DAS.Payments.DataLocks.Application.Services
                     throw new ArgumentNullException(nameof(createdEvent));
                 }
 
-                var model = mapper.Map<ApprenticeshipModel>(createdEvent);
-
                 logger.LogDebug($"Now checking apprenticeship hiring payment eligibility for Apprenticeship id: {createdEvent.ApprenticeshipId}.");
 
-                if (model.IsLevyPayer)
+                if (createdEvent.ApprenticeshipEmployerTypeOnApproval == CommitmentsV2.Types.ApprenticeshipEmployerType.Levy)
                 {
                     logger.LogInfo($"Hiring payment not applicable for apprenticeship {createdEvent.ApprenticeshipId} because the employer is a levy payer.");
                     return;
@@ -97,7 +95,7 @@ namespace SFA.DAS.Payments.DataLocks.Application.Services
 
                 var correlationId = Uuid.NewDatabaseFriendly(Database.SqlServer);
                 var apprenticeshipId = createdEvent.ApprenticeshipId;
-                var uln = model.Uln;
+                var uln = createdEvent.Uln;
                 var accountId = createdEvent.AccountId;
 
                 var employmentVerificationModel = new ApprenticeshipEmploymentVerificationModel
@@ -115,15 +113,18 @@ namespace SFA.DAS.Payments.DataLocks.Application.Services
 
                 await employmentVerificationService.Save(employmentVerificationModel).ConfigureAwait(false);
 
-                await employmentVerificationRequestService
-                    .PublishVerifyNotEmployed(
-                        correlationId,
-                        apprenticeshipId,
-                        uln,
-                        accountId,
-                        employmentStartDate,
-                        PreEmploymentCheckDurationDays)
-                    .ConfigureAwait(false);
+                var message = new VerifyNotEmployed
+                {
+                    CorrelationId = correlationId,
+                    ApprenticeshipId = apprenticeshipId,
+                    ULN = long.Parse(uln),
+                    EmployerAccountIdentifier = accountId,
+                    StartDate = employmentStartDate,
+                    Reference = $"Apprenticeship Hiring Payment Eligibility Check - ApprenticeshipId:{apprenticeshipId}",
+                    DurationInDays = PreEmploymentCheckDurationDays
+                };
+
+                await employmentVerificationMessageSender.Send(message).ConfigureAwait(false);
 
                 logger.LogInfo($"Published VerifyNotEmployed message for apprenticeship {createdEvent.ApprenticeshipId}. Employment check start date: {employmentStartDate:yyyy-MM-dd}.");
             }

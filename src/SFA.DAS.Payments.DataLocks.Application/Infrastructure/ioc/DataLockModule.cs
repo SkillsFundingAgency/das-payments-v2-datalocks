@@ -101,7 +101,13 @@ namespace SFA.DAS.Payments.DataLocks.Application.Infrastructure.ioc
             builder.RegisterType<ManageReceivedDataLockEvent>().AsImplementedInterfaces().InstancePerLifetimeScope();
             builder.RegisterType<ApprenticeshipHiringPaymentProcessor>().AsImplementedInterfaces().InstancePerLifetimeScope();
             builder.RegisterType<ApprenticeshipEmploymentVerificationService>().AsImplementedInterfaces().InstancePerLifetimeScope();
-            builder.RegisterType<EmploymentVerificationRequestService>().As<IEmploymentVerificationRequestService>().InstancePerLifetimeScope();
+            builder.Register(ctx =>
+            {
+                var configHelper = ctx.Resolve<IConfigurationHelper>();
+                return new EmploymentVerificationMessageSender(ctx.Resolve<IEmploymentVerificationEndpoint>(), configHelper.GetSetting("EvsQueueName"));
+            }).As<IEmploymentVerificationMessageSender>().InstancePerLifetimeScope();
+            builder.RegisterType<EmploymentVerificationEndpointConfigurationFactory>().As<IEmploymentVerificationEndpointConfigurationFactory>().SingleInstance();
+            builder.RegisterType<EmploymentVerificationEndpoint>().As<IEmploymentVerificationEndpoint>().SingleInstance();
         }
     }
 }
