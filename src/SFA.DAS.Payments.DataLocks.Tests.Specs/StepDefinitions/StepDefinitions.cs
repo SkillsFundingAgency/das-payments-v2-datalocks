@@ -4,6 +4,7 @@ using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities;
 using SFA.DAS.CommitmentsV2.Messages.Events;
 using SFA.DAS.CommitmentsV2.Types;
 using SFA.DAS.EmploymentVerificationService.Messages.Learner.Commands;
+using SFA.DAS.EmploymentVerificationService.Messages.Learner.Events;
 using SFA.DAS.Payments.DataLocks.Tests.Specs.Handlers;
 using SFA.DAS.Payments.Messages.Common.Events;
 using SFA.DAS.Payments.Model.Core.Entities;
@@ -120,10 +121,10 @@ namespace SFA.DAS.Payments.DataLocks.Tests.Specs.StepDefinitions
         }
 
         [Given("the learner is aged under {int} at the learning start date")]
-        public void WhenTheLearnerIsAgedUnderAtTheLearningStartDate(int p0)
+        public void WhenTheLearnerIsAgedUnderAtTheLearningStartDate(int age)
         {
             var message = GetCreatedEvent();
-            message.DateOfBirth = new DateTime(2002, 10, 2);
+            message.DateOfBirth = message.StartDate.AddYears(-age).AddDays(1);
             scenarioContext.Set(message, "ApprenticeshipCreatedEvent");
         }
 
@@ -227,9 +228,108 @@ namespace SFA.DAS.Payments.DataLocks.Tests.Specs.StepDefinitions
             storedVerification.PreEmploymentStatus.Should().Be((byte)expectedStatus);
         }
 
+        [Given("a VerifyNotEmployed request has been published")]
+        public async Task GivenAVerifyNotEmployedRequestHasBeenPublishedAsync()
+        {
+            await PublishVerifyNotEmployedRequest(new DateTime(2026, 10, 2));
+        }
+
+        [When("the payments service receives a VerifyNotEmployedCompleted message")]
+        public void WhenThePaymentsServiceReceivesAVerifyNotEmployedCompletedMessage()
+        {
+            var apprenticeship = GetCreatedEvent();
+
+            var request = VerifyNotEmployedHandler
+                .GetMessages(apprenticeship.ApprenticeshipId)
+                .Single();
+
+            var message = new VerifyNotEmployedCompleted
+            {
+                ApprenticeshipId = apprenticeship.ApprenticeshipId,
+                CorrelationId = request.CorrelationId
+            };
+
+            scenarioContext.Set(message, "VerifyNotEmployedCompleted");
+        }
+
+        [Given(@"result contains NotEmployed=(.*)")]
+        [When(@"result contains NotEmployed=(.*)")]
+        public async Task GivenResultContainsNotEmployedAsync(bool notEmployed)
+        {
+            var message = GetCompletedEvent();
+
+            message.NotEmployed = notEmployed;
+
+            scenarioContext.Set(message, "VerifyNotEmployedCompleted");
+
+            await testSession.DASMessageContext.Send<VerifyNotEmployedCompleted>(message);
+        }
+
+        [When("the response is matched to the stored request")]
+        public void WhenTheResponseIsMatchedToTheStoredRequest()
+        {
+        }
+
+        [Then(@"the stored request is updated with Pre-Employment Status set to ""(.*)""")]
+        public async Task ThenTheStoredRequestIsUpdatedWithPreEmploymentStatusSetTo(string status)
+        {
+            var message = GetCompletedEvent();
+
+            var expectedStatus = Enum.Parse<EmploymentValidationStatus>(
+                status,
+                ignoreCase: true);
+
+            await testSession.WaitForIt(
+                async () =>
+                {
+                    var verification = await testSession.DataContext
+                        .ApprenticeshipEmploymentVerification
+                        .AsNoTracking()
+                        .SingleOrDefaultAsync(x =>
+                            x.ApprenticeshipId == message.ApprenticeshipId &&
+                            x.PreEmploymentCorrelationId == message.CorrelationId);
+
+                    return verification?.PreEmploymentStatus == (byte)expectedStatus;
+                },
+                $"Employment verification record was not updated to {expectedStatus}");
+
+            var verificationRecord = await testSession.DataContext
+                .ApprenticeshipEmploymentVerification
+                .AsNoTracking()
+                .SingleAsync(x =>
+                    x.ApprenticeshipId == message.ApprenticeshipId &&
+                    x.PreEmploymentCorrelationId == message.CorrelationId);
+
+            verificationRecord.PreEmploymentStatus.Should().Be((byte)expectedStatus);
+        }
+
+        private async Task PublishVerifyNotEmployedRequest(DateTime learningStartDate)
+        {
+            GivenANewApprenticeshipHasBeenApproved();
+            WhenTheEmployerIsNonLevy();
+
+            var apprenticeship = GetCreatedEvent();
+            apprenticeship.StartDate = learningStartDate;
+
+            WhenTheLearnerIsAgedUnderAtTheLearningStartDate(25);
+
+            await WhenThePaymentsServiceReceivesTheApprenticeshipCreatedMessage();
+
+            await testSession.WaitForIt(
+                () => VerifyNotEmployedHandler
+                    .GetMessages(apprenticeship.ApprenticeshipId)
+                    .Any(),
+                "VerifyNotEmployed message was not received");
+        }
+
         private ApprenticeshipCreatedEvent GetCreatedEvent()
         {
             return scenarioContext.Get<ApprenticeshipCreatedEvent>("ApprenticeshipCreatedEvent");
+        }
+
+        private VerifyNotEmployedCompleted GetCompletedEvent()
+        {
+            return scenarioContext.Get<VerifyNotEmployedCompleted>("VerifyNotEmployedCompleted");
         }
     }
 }

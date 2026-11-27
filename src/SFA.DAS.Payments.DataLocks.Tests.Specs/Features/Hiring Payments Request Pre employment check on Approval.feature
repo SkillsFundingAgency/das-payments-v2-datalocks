@@ -34,3 +34,19 @@ Then the payments service creates and publishes a VerifyNotEmployed request with
 | StartDate                          | 01/07/2026						             |
 | DurationInDays                     | 60                                            |
 And  the payments service stores the request details with a status of "Pending"
+
+
+Scenario Outline: Check completed - learner not employed (successful result)
+Given a VerifyNotEmployed request has been published
+When the payments service receives a VerifyNotEmployedCompleted message	
+And  result contains NotEmployed=true
+And the response is matched to the stored request
+Then the stored request is updated with Pre-Employment Status set to "NotEmployed"
+
+
+Scenario Outline: Check completed - learner employed (unsuccessful result)
+Given a VerifyNotEmployed request has been published
+When the payments service receives a VerifyNotEmployedCompleted message	
+And  result contains NotEmployed=false
+And the response is matched to the stored request
+Then the stored request is updated with Pre-Employment Status set to "Employed"
