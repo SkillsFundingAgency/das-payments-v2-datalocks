@@ -8,6 +8,7 @@ using SFA.DAS.Payments.DataLocks.Tests.Specs.Handlers;
 using SFA.DAS.Payments.Messages.Common.Events;
 using SFA.DAS.Payments.Model.Core.Entities;
 using SFA.DAS.Payments.Model.Core.OnProgramme;
+using System.Globalization;
 
 namespace SFA.DAS.Payments.DataLocks.Tests.Specs.StepDefinitions
 {
@@ -103,10 +104,18 @@ namespace SFA.DAS.Payments.DataLocks.Tests.Specs.StepDefinitions
         }
 
         [Given("the learning start date is on or after {int}nd Oct {int}")]
-        public void WhenTheLearningStartDateIsOnOrAfterNdOct(int p0, int p1)
+        public void WhenTheLearningStartDateIsOnOrAfterNdOct(int day, int year)
         {
             var message = GetCreatedEvent();
-            message.StartDate = new DateTime(2026, 10, 2);
+            message.StartDate = new DateTime(year, 10, day);
+            scenarioContext.Set(message, "ApprenticeshipCreatedEvent");
+        }
+
+        [Given("the learning start date is on {int}st Oct {int}")]
+        public void GivenTheLearningStartDateIsOnStOct(int day, int year)
+        {
+            var message = GetCreatedEvent();
+            message.StartDate = new DateTime(year, 10, day);
             scenarioContext.Set(message, "ApprenticeshipCreatedEvent");
         }
 
@@ -125,8 +134,8 @@ namespace SFA.DAS.Payments.DataLocks.Tests.Specs.StepDefinitions
             await testSession.DASMessageContext.Send<ApprenticeshipCreatedEvent>(message);
         }
 
-        [Then("the payments service creates and publishes a VerifyNotEmployed request with the following details mapped from the incoming message")]
-        public async Task ThenThePaymentsServiceCreatesAndPublishesAVerifyNotEmployedRequestAsync()
+        [Then(@"the payments service creates and publishes a VerifyNotEmployed request with the following details mapped from the incoming message")]
+        public async Task ThenThePaymentsServiceCreatesAndPublishesAVerifyNotEmployedRequestAsync(Table table)
         {
             var apprenticeship = GetCreatedEvent();
 
@@ -136,22 +145,52 @@ namespace SFA.DAS.Payments.DataLocks.Tests.Specs.StepDefinitions
                     .Any(),
                 "VerifyNotEmployed message was not received");
 
-            var message = VerifyNotEmployedHandler.GetMessages(apprenticeship.ApprenticeshipId).Single();
+            var message = VerifyNotEmployedHandler
+                .GetMessages(apprenticeship.ApprenticeshipId)
+                .Single();
 
-            message.ApprenticeshipId
-                .Should().Be(apprenticeship.ApprenticeshipId);
+            foreach (var row in table.Rows)
+            {
+                var field = row["Outgoing VerifyNotEmployed command"];
+                var expected = row["Maps from incoming ApprenticeshipCreatedEvent"];
 
-            message.ULN
-                .Should().Be(long.Parse(apprenticeship.Uln));
+                switch (field)
+                {
+                    case "ULN":
+                        message.ULN.Should().Be(long.Parse(apprenticeship.Uln));
+                        break;
 
-            message.EmployerAccountIdentifier
-                .Should().Be(apprenticeship.AccountId);
+                    case "ApprenticeshipId":
+                        message.ApprenticeshipId.Should().Be(apprenticeship.ApprenticeshipId);
+                        break;
 
-            message.StartDate
-                .Should().Be(apprenticeship.StartDate.Date.AddDays(-150));
+                    case "EmployerAccountIdentifier":
+                        message.EmployerAccountIdentifier.Should().Be(apprenticeship.AccountId);
+                        break;
 
-            message.DurationInDays
-                .Should().Be(60);
+                    case "StartDate":
+                        var expectedDate = expected switch
+                        {
+                            "Learning Start date - 150 days"
+                                => apprenticeship.StartDate.Date.AddDays(-150),
+
+                            _ => DateTime.ParseExact(
+                                expected,
+                                "dd/MM/yyyy",
+                                CultureInfo.InvariantCulture)
+                        };
+
+                        message.StartDate.Should().Be(expectedDate);
+                        break;
+
+                    case "DurationInDays":
+                        message.DurationInDays.Should().Be(int.Parse(expected));
+                        break;
+
+                    default:
+                        throw new ArgumentException($"Unsupported field '{field}'");
+                }
+            }
         }
 
         [Then("the payments service stores the request details with a status of {string}")]
@@ -161,6 +200,7 @@ namespace SFA.DAS.Payments.DataLocks.Tests.Specs.StepDefinitions
             var message = VerifyNotEmployedHandler
                 .GetMessages(apprenticeship.ApprenticeshipId)
                 .Single();
+
             var expectedStatus = Enum.Parse<EmploymentValidationStatus>(status, ignoreCase: true);
 
             await testSession.WaitForIt(

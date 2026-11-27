@@ -11,4 +11,26 @@ And the learning start date is on or after 2nd Oct 2026
 And the learner is aged under 25 at the learning start date
 When the payments service receives the ApprenticeshipCreated message
 Then the payments service creates and publishes a VerifyNotEmployed request with the following details mapped from the incoming message
+| Outgoing VerifyNotEmployed command | Maps from incoming ApprenticeshipCreatedEvent |
+| ULN                                | Uln                                           |
+| ApprenticeshipId                   | ApprenticeshipId                              |
+| EmployerAccountIdentifier          | AccountId                                     |
+| StartDate                          | Learning Start date - 150 days                |
+| DurationInDays                     | 60                                            |
+And  the payments service stores the request details with a status of "Pending"
+
+
+Scenario Outline: Apprenticeship is approved, learning start date is on 1st Oct 2026, special case - employment can start from 1st July
+Given a new apprenticeship has been approved
+And the employer is non levy
+And the learning start date is on 1st Oct 2026
+And the learner is aged under 25 at the learning start date
+When the payments service receives the ApprenticeshipCreated message
+Then the payments service creates and publishes a VerifyNotEmployed request with the following details mapped from the incoming message
+| Outgoing VerifyNotEmployed command | Maps from incoming ApprenticeshipCreatedEvent |
+| ULN                                | Uln                                           |
+| ApprenticeshipId                   | ApprenticeshipId                              |
+| EmployerAccountIdentifier          | AccountId                                     |
+| StartDate                          | 01/07/2026						             |
+| DurationInDays                     | 60                                            |
 And  the payments service stores the request details with a status of "Pending"
