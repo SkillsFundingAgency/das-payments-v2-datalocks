@@ -1,0 +1,51 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Bogus" Version="35.6.3" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.32" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.32" />
+		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
+		<PackageReference Include="Reqnroll.NUnit" Version="3.2.0" />
+		<PackageReference Include="nunit" Version="4.4.0" />
+		<PackageReference Include="NUnit3TestAdapter" Version="5.1.0" />
+		<PackageReference Include="NServiceBus" Version="8.1.1" />
+		<PackageReference Include="NServiceBus.Newtonsoft.Json" Version="3.0.0" />
+		<PackageReference Include="NServiceBus.Transport.AzureServiceBus" Version="3.2.1" />
+		<PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.2" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.2" />
+		<PackageReference Include="FluentAssertions" Version="5.9.0" />
+		<!--<PackageReference Include="NServiceBus.Persistence.AzureTable" Version="5.0.1" />-->
+		
+		<PackageReference Include="SFA.DAS.CommitmentsV2.Messages" Version="100.0.213" />
+		<PackageReference Include="SFA.DAS.CommitmentsV2.Types" Version="100.0.213" />
+
+
+
+		<PackageReference Include="SFA.DAS.EmploymentVerificationService.Messages" Version="0.1.6-prerelease-61" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Update="appSettings.development.json">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Update="appSettings.development.json">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Update="appSettings.json">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\SFA.DAS.Payments.DataLocks.Domain\SFA.DAS.Payments.DataLocks.Domain.csproj" />
+	  <ProjectReference Include="..\SFA.DAS.Payments.Datalocks.Messages\SFA.DAS.Payments.DataLocks.Messages.csproj" />
+	  <ProjectReference Include="..\SFA.DAS.Payments.DataLocks.Model\SFA.DAS.Payments.DataLocks.Model.csproj" />
+	</ItemGroup>
+
+</Project>

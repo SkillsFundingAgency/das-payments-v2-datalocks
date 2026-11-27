@@ -14,6 +14,7 @@ using SFA.DAS.Payments.DataLocks.Domain.Services.CourseValidation;
 using SFA.DAS.Payments.DataLocks.Domain.Services.LearnerMatching;
 using SFA.DAS.Payments.DataLocks.Messages.Events;
 using SFA.DAS.Payments.ServiceFabric.Core.Batch;
+using SFA.DAS.Payments.DataLocks.Application.Infrastructure.Messaging;
 
 namespace SFA.DAS.Payments.DataLocks.Application.Infrastructure.ioc
 {
@@ -40,13 +41,13 @@ namespace SFA.DAS.Payments.DataLocks.Application.Infrastructure.ioc
             {
                 var configHelper = ctx.Resolve<IConfigurationHelper>();
                 var disableDatalocks = configHelper.GetSettingOrDefault("DisableDatalocks", false);
-                
+
                 // If datalocks are disabled (PV2-1887) then the only validator that we want
                 //  enabled is the Pause validator (DLOCK_12)
                 if (disableDatalocks)
                 {
                     return new CourseValidationProcessor(
-                        new List<ICourseValidator> {new ApprenticeshipPauseValidator()});
+                        new List<ICourseValidator> { new ApprenticeshipPauseValidator() });
                 }
 
                 // Otherwise all of the validators
@@ -60,7 +61,7 @@ namespace SFA.DAS.Payments.DataLocks.Application.Infrastructure.ioc
 
                 return new StartDateValidator(disableDatalocks);
             }).AsImplementedInterfaces().InstancePerLifetimeScope();
-            
+
             builder.RegisterType<CalculatePeriodStartAndEndDate>().AsImplementedInterfaces().InstancePerLifetimeScope();
             builder.RegisterType<DataLockStatusService>().AsImplementedInterfaces().InstancePerLifetimeScope();
 
@@ -98,6 +99,15 @@ namespace SFA.DAS.Payments.DataLocks.Application.Infrastructure.ioc
             builder.RegisterType<PriceEpisodeStatusChangeBuilder>().InstancePerLifetimeScope();
             builder.RegisterType<PriceEpisodesReceivedService>().AsImplementedInterfaces().InstancePerLifetimeScope();
             builder.RegisterType<ManageReceivedDataLockEvent>().AsImplementedInterfaces().InstancePerLifetimeScope();
+            builder.RegisterType<ApprenticeshipHiringPaymentProcessor>().AsImplementedInterfaces().InstancePerLifetimeScope();
+            builder.RegisterType<ApprenticeshipEmploymentVerificationService>().AsImplementedInterfaces().InstancePerLifetimeScope();
+            builder.Register(ctx =>
+            {
+                var configHelper = ctx.Resolve<IConfigurationHelper>();
+                return new EmploymentVerificationMessageSender(ctx.Resolve<IEmploymentVerificationEndpoint>(), configHelper.GetSetting("EvsQueueName"));
+            }).As<IEmploymentVerificationMessageSender>().InstancePerLifetimeScope();
+            builder.RegisterType<EmploymentVerificationEndpointConfigurationFactory>().As<IEmploymentVerificationEndpointConfigurationFactory>().SingleInstance();
+            builder.RegisterType<EmploymentVerificationEndpoint>().As<IEmploymentVerificationEndpoint>().SingleInstance();
         }
     }
 }

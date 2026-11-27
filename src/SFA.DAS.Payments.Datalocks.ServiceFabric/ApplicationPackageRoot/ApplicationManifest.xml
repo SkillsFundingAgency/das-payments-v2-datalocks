@@ -27,6 +27,7 @@
     <Parameter Name="ProcessMessageSequentially" DefaultValue="false" />
     <Parameter Name="ApprovalsService_EndpointName" DefaultValue="sfa-das-payments-datalock-approvals" />
     <Parameter Name="ApprovalsService_FailedMessagesQueue" DefaultValue="sfa-das-payments-datalock-approvals-errors" />
+    <Parameter Name="EvsQueueName" DefaultValue="sfa-das-evs-verify-not-employed" />
     <Parameter Name="DataLockService_EndpointName" DefaultValue="sfa-das-payments-datalock" />
     <Parameter Name="DataLockService_FailedMessagesQueue" DefaultValue="sfa-das-payments-datalock-errors" />
     <Parameter Name="ApplicationInsightsInstrumentationKey" DefaultValue="" />
@@ -86,6 +87,7 @@
           <Section Name="Settings">
             <Parameter Name="EndpointName" Value="[ApprovalsService_EndpointName]" />
             <Parameter Name="FailedMessagesQueue" Value="[ApprovalsService_FailedMessagesQueue]" />
+            <Parameter Name="EvsQueueName" Value="[EvsQueueName]" />
             <Parameter Name="LogLevel" Value="[LogLevel]" />
             <Parameter Name="ProcessMessageSequentially" Value="[ProcessMessageSequentially]" />
             <Parameter Name="ApplicationInsightsInstrumentationKey" Value="[ApplicationInsightsInstrumentationKey]" />

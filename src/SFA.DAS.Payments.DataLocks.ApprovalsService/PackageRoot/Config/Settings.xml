@@ -11,6 +11,7 @@
   <Section Name="Settings">
     <Parameter Name="EndpointName" Value="" />
     <Parameter Name="FailedMessagesQueue" Value="" />
+    <Parameter Name="EvsQueueName" Value="" />
     <Parameter Name="LogLevel" Value="Debug" />
     <Parameter Name="ProcessMessageSequentially" Value="" />
     <Parameter Name="ApplicationInsightsInstrumentationKey" Value="" />
